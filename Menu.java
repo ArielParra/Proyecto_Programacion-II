@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 public class Menu extends JFrame {
     public Menu() {
@@ -16,7 +17,16 @@ public class Menu extends JFrame {
         setMinimumSize(new Dimension(800, 600));
 
         // Establecer el fondo
-        setContentPane(new JLabel(new ImageIcon("img.png")));
+        try {
+            File file = new File("fondoMenu.png");
+            if(file.exists()) {
+                setContentPane(new JLabel(new ImageIcon(file.getAbsolutePath())));
+            } else {
+                getContentPane().setBackground(Color.GREEN);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         setLayout(new BorderLayout());
 
         // Crear el título principal en grande
