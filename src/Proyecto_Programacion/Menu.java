@@ -8,9 +8,11 @@ import java.io.File;
 
 public class Menu {
     private Ventana ventana;
+    private Configuracion configuracion;
 
     public Menu(Ventana ventana) {
         this.ventana = ventana;
+        this.configuracion = new Configuracion(ventana, this); 
     }
 
     public void imprimirMenu() {
@@ -35,7 +37,7 @@ public class Menu {
 
         jugarButton.addActionListener(new JugarAction(ventana));
         editorButton.addActionListener(new EditorAction(ventana));
-        configuracionButton.addActionListener(new ConfiguracionAction(ventana));
+        configuracionButton.addActionListener(new ConfiguracionAction(ventana,this.configuracion));
         salirButton.addActionListener(new SalirAction());
 
         JPanel menuPanel = new JPanel(new GridBagLayout());
@@ -92,10 +94,9 @@ public class Menu {
 
     private static class ConfiguracionAction extends BaseAction {
         private Configuracion configuracion;
-
-        public ConfiguracionAction(Ventana ventana) {
+        public ConfiguracionAction(Ventana ventana,Configuracion configuracion) {
             super(ventana);
-            this.configuracion = new Configuracion(ventana);
+            this.configuracion = configuracion;
         }
 
         public void actionPerformed(ActionEvent e) {

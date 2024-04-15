@@ -4,19 +4,17 @@ package Proyecto_Programacion;
 import java.io.File;
 
 import java.awt.*;
-import java.awt.event.*;
-
 import javax.swing.*;
 
 
 
-class Ventana extends JFrame {
+public class Ventana extends JFrame {
 
-    public Ventana() {
+    public Ventana(String titulo) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(800, 600));
-        setTitle("TItulo");
+        setTitle(titulo);
     }
 
     protected void setBackground(File file){

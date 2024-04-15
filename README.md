@@ -8,7 +8,7 @@ Juego similar a Guitar hero
 - [x] creacion de repositorio en Github Para trabajar en conjunto
 - [x] creacion de cronograma de actividades
 - [x] Creacion de documento donde se definira la base del proyecto
-- [ ] creacion de esqueleto del proyecto 
+- [x] creacion de esqueleto del proyecto 
 - [x] creacion de menus
 - [x] fondos de menus y movimiento entre menus
 
