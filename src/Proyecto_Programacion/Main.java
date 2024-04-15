@@ -10,9 +10,10 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Ventana juego = new Ventana();
-        juego.imprimirMenu();
-        juego.mostrar();
+        Ventana ventana = new Ventana();
+        Menu menu = new Menu (ventana);
+        menu.imprimirMenu();
+        ventana.mostrar();
 
     }
     
