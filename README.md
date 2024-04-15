@@ -6,11 +6,11 @@ Juego similar a Guitar hero
 ## semana 0, del 10 al 12 de abril
 
 - [x] creacion de repositorio en Github Para trabajar en conjunto
-- [ ] creacion de cronograma de actividades
-- [ ] Creacion de documento donde se definira la base del proyecto
+- [x] creacion de cronograma de actividades
+- [x] Creacion de documento donde se definira la base del proyecto
 - [ ] creacion de esqueleto del proyecto 
-- [ ] creacion de menus
-- [ ] fondos de menus y movimiento entre menus
+- [x] creacion de menus
+- [x] fondos de menus y movimiento entre menus
 
 ## semana 1, del 15 al 19 de abril
 
