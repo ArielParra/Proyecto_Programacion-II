@@ -23,6 +23,7 @@ public class Ventana extends JFrame {
         } else {
             getContentPane().setBackground(Color.BLUE);
         }
+        setLayout(new BorderLayout());
     }
     void mostrar(){
         setVisible(true);

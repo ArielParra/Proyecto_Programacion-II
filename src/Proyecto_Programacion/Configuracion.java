@@ -23,40 +23,38 @@ class Configuracion {
     
     public void imprimirConfiguracion() {
         ventana.setBackground(new File("img/fondoConfiguracion.png"));
-        ventana.setLayout(new BorderLayout());
 
         JLabel titleLabel = new JLabel("Configuracion", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
         titleLabel.setForeground(Color.BLACK);
         ventana.add(titleLabel, BorderLayout.NORTH);
-        
-             JButton boton1 = new JButton("boton1");
+
+        JButton boton1 = new JButton("boton1");
         JButton volver = new JButton("volver a menu");
 
-        Dimension buttonSize = new Dimension(200, 25);
+        Dimension buttonSize = new Dimension(200, 40); // Decreased button height
         boton1.setPreferredSize(buttonSize);
         volver.setPreferredSize(buttonSize);
 
-        JPanel configuracionPanel = new JPanel(new GridLayout(2,1));
+        JPanel configuracionPanel = new JPanel(new GridBagLayout());
         configuracionPanel.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.VERTICAL;
-
-        configuracionPanel.add(boton1);
-        configuracionPanel.add(volver);
+        
+        configuracionPanel.add(boton1, gbc);
+        configuracionPanel.add(volver, gbc);
 
         JPanel outerPanel = new JPanel(new BorderLayout());
         outerPanel.setOpaque(false);
-        outerPanel.setBorder(BorderFactory.createEmptyBorder(500, 800, 100, 800));
+        outerPanel.setBorder(BorderFactory.createEmptyBorder(200, 100, 100, 100));
 
         outerPanel.add(configuracionPanel, BorderLayout.CENTER);
 
-        //ventana.add(outerPanel, BorderLayout.CENTER);
-        //ventana.getContentPane().removeAll();
-        ventana.getContentPane().add(outerPanel, BorderLayout.CENTER);
+        ventana.add(outerPanel, BorderLayout.CENTER);
+
         ventana.revalidate();
         ventana.repaint();
 

@@ -17,7 +17,6 @@ public class Menu {
 
     public void imprimirMenu() {
         ventana.setBackground(new File("img/fondoMenu.png"));
-        ventana.setLayout(new BorderLayout());
 
         JLabel titleLabel = new JLabel("Mi Juego", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
