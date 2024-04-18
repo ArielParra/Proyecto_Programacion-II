@@ -1,3 +1,5 @@
+package Proyecto_Programacion;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -13,16 +15,17 @@ public class Menu {
     private JPanel cardPanel;
     private Image backgroundImage;
     private Image backgroundImageConfig;
+    public Juego juego = new Juego();
 
     public Menu() {
        // Cargar ruta de imagen de fondo
         try {
-            backgroundImage = ImageIO.read(new File("../images/fondo.jpg")); 
+            backgroundImage = ImageIO.read(new File("../../images/fondo.jpg")); 
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            backgroundImageConfig = ImageIO.read(new File("../images/fondoconfig.jpg")); 
+            backgroundImageConfig = ImageIO.read(new File("../../images/fondoconfig.jpg")); 
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,9 +43,11 @@ public class Menu {
         // paneles
         JPanel menuPanel = createMenuPanel();
         JPanel configPanel = createConfigPanel();
-
+        
+        JPanel juegoPanel = juego.createJuegoPanel();
         // Añadir paneles al CardLayout
         cardPanel.add(menuPanel, "menu");
+        cardPanel.add(juegoPanel, "juego");
         cardPanel.add(configPanel, "config");
 
         // Añadir cardPanel a la ventana
@@ -90,7 +95,9 @@ public class Menu {
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new Juego();
+                cardLayout.show(cardPanel, "juego");
+                juego.Iniciar();
+
             }
         });
         button2.addActionListener(new ActionListener() {
