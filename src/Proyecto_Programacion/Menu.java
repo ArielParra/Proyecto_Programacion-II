@@ -21,12 +21,12 @@ public class Menu {
     public Menu() {
        // Cargar ruta de imagen de fondo
         try {
-            backgroundImage = ImageIO.read(new File("/images/fondo.jpg")); 
+            backgroundImage = ImageIO.read(new File("images/fondo.jpg")); 
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            backgroundImageConfig = ImageIO.read(new File("/images/fondoconfig.jpg")); 
+            backgroundImageConfig = ImageIO.read(new File("images/fondoconfig.jpg")); 
         } catch (IOException e) {
             e.printStackTrace();
         }
