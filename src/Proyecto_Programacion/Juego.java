@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 public class Juego extends JPanel {
 
     private Float volumen = 0.0f;
+
     private List<Clip> clips; // Lista para almacenar múltiples Sonidos
 
     public Juego() {
@@ -19,12 +20,12 @@ public class Juego extends JPanel {
     }
 
     public void Iniciar() {
-
-        reproducir("../../audio/startgame.wav");    
+        reproducir("audio/startgame.wav");  
+        
     }
-
+   
     public void setVolumen(Float gainControl) {
-        volumen = gainControl;
+      volumen = gainControl;
     }
     public void reproducir(String ruta) {
         try {
@@ -48,8 +49,8 @@ public class Juego extends JPanel {
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
+    
     }
-
     public void PararSonido() {
         // Detener todos los Clips en la lista
         for (Clip clip : clips) {
@@ -60,4 +61,4 @@ public class Juego extends JPanel {
         // Limpia la lista después de detener los clips si ya no los necesitas
         clips.clear();
     }
-}
+    }

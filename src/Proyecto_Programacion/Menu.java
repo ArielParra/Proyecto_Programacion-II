@@ -21,12 +21,12 @@ public class Menu {
     public Menu() {
        // Cargar ruta de imagen de fondo
         try {
-            backgroundImage = ImageIO.read(new File("../../images/fondo.jpg")); 
+            backgroundImage = ImageIO.read(new File("/images/fondo.jpg")); 
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            backgroundImageConfig = ImageIO.read(new File("../../images/fondoconfig.jpg")); 
+            backgroundImageConfig = ImageIO.read(new File("/images/fondoconfig.jpg")); 
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,10 +45,11 @@ public class Menu {
         JPanel menuPanel = createMenuPanel();
         JPanel configPanel = createConfigPanel();
         
-        JPanel juegoPanel = createJuegoPanel();
+        JPanel menujuegoPanel = createJuegoPanel();
         // Añadir paneles al CardLayout
         cardPanel.add(menuPanel, "menu");
-        cardPanel.add(juegoPanel, "juego");
+        cardPanel.add(menujuegoPanel, "juego");
+        cardPanel.add(juego, "bolita");
         cardPanel.add(configPanel, "config");
 
         // Añadir cardPanel a la ventana
@@ -98,6 +99,7 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "juego");
                 juego.Iniciar();
+                
             }
         });
         button2.addActionListener(new ActionListener() {
@@ -183,6 +185,7 @@ public class Menu {
         JLabel titulo = new JLabel("Probando Juego");
         titulo.setBounds(0, 0, 400, 30);
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        
         JButton boton = new JButton("Salir");
         boton.setBounds(100, 100, 100, 50);
         panel.add(titulo);
@@ -195,7 +198,7 @@ public class Menu {
                 juego.PararSonido();
             }
         });
-
+      
         //Se pensara un menu para canciones en este apartado
 
         return panel;
