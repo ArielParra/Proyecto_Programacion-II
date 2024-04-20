@@ -16,6 +16,7 @@ public class Menu {
     private Image backgroundImage;
     private Image backgroundImageConfig;
     public Juego juego = new Juego();
+    public Float gainControl = 0.0f;
 
     public Menu() {
        // Cargar ruta de imagen de fondo
@@ -44,7 +45,7 @@ public class Menu {
         JPanel menuPanel = createMenuPanel();
         JPanel configPanel = createConfigPanel();
         
-        JPanel juegoPanel = juego.createJuegoPanel();
+        JPanel juegoPanel = createJuegoPanel();
         // Añadir paneles al CardLayout
         cardPanel.add(menuPanel, "menu");
         cardPanel.add(juegoPanel, "juego");
@@ -97,7 +98,6 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "juego");
                 juego.Iniciar();
-
             }
         });
         button2.addActionListener(new ActionListener() {
@@ -140,10 +140,22 @@ public class Menu {
         JButton buttonc1 = new JButton("Dificultad");
         buttonc1.setBounds(100, 50, 200, 30);
         panel.add(buttonc1);
-
-        JButton buttonc2 = new JButton("Volumen");
-        buttonc2.setBounds(100, 100, 200, 30);
-        panel.add(buttonc2);
+        JLabel volumen = new JLabel("Volumen");
+        volumen.setBounds(100, 75, 200, 30);
+        volumen.setForeground(Color.WHITE);
+        volumen.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(volumen);
+        // Crear un JSlider para ajustar el volumen
+        JSlider volumenSlider = new JSlider(-50, 4, 0);
+        volumenSlider.setValue(-10);
+        volumenSlider.setBounds(100, 100, 200, 30);
+        panel.add(volumenSlider);
+        // Agregar un ChangeListener para ajustar el volumen en tiempo real
+        volumenSlider.addChangeListener(e -> {
+            float nuevoVolumen = volumenSlider.getValue();
+            gainControl = nuevoVolumen;
+            juego.setVolumen(nuevoVolumen);
+        });
 
         JButton buttonc4 = new JButton("Controles");
         buttonc4.setBounds(100, 150, 200, 30);
@@ -160,6 +172,31 @@ public class Menu {
                 cardLayout.show(cardPanel, "menu");
             }
         });
+
+        return panel;
+    }
+    public JPanel createJuegoPanel() {
+        JPanel panel = new JPanel();
+
+        //Aqui se crean los elementos del juego
+        //Lo que mostrara el panel 
+        JLabel titulo = new JLabel("Probando Juego");
+        titulo.setBounds(0, 0, 400, 30);
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        JButton boton = new JButton("Salir");
+        boton.setBounds(100, 100, 100, 50);
+        panel.add(titulo);
+        panel.add(boton);
+
+        boton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "menu");
+                juego.PararSonido();
+            }
+        });
+
+        //Se pensara un menu para canciones en este apartado
 
         return panel;
     }
