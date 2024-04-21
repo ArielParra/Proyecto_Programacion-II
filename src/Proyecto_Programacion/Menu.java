@@ -49,9 +49,7 @@ public class Menu {
         frame.setLayout(cardLayout);
         frame.setVisible(true);
     }
-
     private JPanel createMenuPanel() {
-            
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -64,157 +62,182 @@ public class Menu {
                     setBackground(Color.LIGHT_GRAY);
                 }
             }
-        };    
-        panel.setLayout(null);
-
+        };
+        
+        // Usar GridBagLayout
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+    
         // Crear etiqueta de título
         JLabel titulo = new JLabel("Menu");
-        titulo.setBounds(0, 0, 400, 30);
-        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 30));
+        titulo.setForeground(Color.WHITE);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 10, 0); // Márgenes
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
         panel.add(titulo);
-
+    
         // Crear botones
         JButton button1 = new JButton("Jugar");
-        button1.setBounds(100, 100, 200, 30);
-        panel.add(button1);
-
+        button1.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button1, constraints);
+    
         JButton button2 = new JButton("Configuracion");
-        button2.setBounds(100, 150, 200, 30);
-        panel.add(button2);
-
+        button2.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button2, constraints);
+    
         JButton button3 = new JButton("Salir");
-        button3.setBounds(100, 200, 200, 30);
-        panel.add(button3);
-
+        button3.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button3, constraints);
+    
         // Añadir action listeners a los botones
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "juego");
                 juego.Iniciar();
-                
             }
         });
+    
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "config");
             }
         });
-
+    
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
             }
         });
-
+    
         return panel;
     }
-
+    
     private JPanel createConfigPanel() {
-
-    JPanel panel = new JPanel() {
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            try {
-                Image backgroundImageConfig = ImageIO.read(new File("images/fondoconfig.jpg"));
-                g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
-            } catch (Exception e) {
-                e.printStackTrace();
-                setBackground(Color.BLUE);
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondoconfig.jpg"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.BLUE);
+                }
             }
-        }
-    };
-        panel.setLayout(null);
-
+        };
+    
+        // Usa GridBagLayout
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
         // Crear etiqueta de título
-        JLabel titulo = new JLabel("Menu Configuracion");
-        titulo.setBounds(0, 0, 400, 30);
-        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Configuracion");
+        titulo.setFont(new Font("Arial", Font.BOLD, 30));
+        titulo.setForeground(Color.WHITE);
         panel.add(titulo);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 10, 0); // Márgenes
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+      
 
         // Crear botones
-        JButton buttonc1 = new JButton("pantlla completa");
-        buttonc1.setBounds(100, 50, 200, 30);
-        panel.add(buttonc1);
-        JLabel volumen = new JLabel("Volumen");
-        volumen.setBounds(100, 75, 200, 30);
-        volumen.setForeground(Color.WHITE);
-        volumen.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(volumen);
-
+        JButton button1 = new JButton("Pantalla completa");
+        button1.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button1, constraints);
+    
+        JLabel volumenLabel = new JLabel("Volumen");
+        volumenLabel.setForeground(Color.WHITE);
+        volumenLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        constraints.gridy++;
+        panel.add(volumenLabel, constraints);
+    
         // Crear un JSlider para ajustar el volumen
         JSlider volumenSlider = new JSlider(-50, 4, 0);
-        volumenSlider.setValue(-10);
-        volumenSlider.setBounds(100, 100, 200, 30);
-        panel.add(volumenSlider);
+        volumenSlider.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(volumenSlider, constraints);
+    
+        JButton button4 = new JButton("Controles");
+        button4.setPreferredSize(new Dimension(150, 50));
 
-        // Agregar un ChangeListener para ajustar el volumen en tiempo real
+        constraints.gridy++;
+        panel.add(button4, constraints);
+    
+        JButton button3 = new JButton("Volver al Menu");
+        button3.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button3, constraints);
+    
+        // Añadir action listeners a los botones
         volumenSlider.addChangeListener(e -> {
-            float nuevoVolumen = volumenSlider.getValue();
-            gainControl = nuevoVolumen;
-            juego.setVolumen(nuevoVolumen);
+            gainControl = (float) volumenSlider.getValue();
+            juego.setVolumen(gainControl);
         });
-
-        JButton buttonc4 = new JButton("Controles");
-        buttonc4.setBounds(100, 150, 200, 30);
-        panel.add(buttonc4);
-
-        JButton buttonc3 = new JButton("Volver al Menu");
-        buttonc3.setBounds(100, 200, 200, 30);
-        panel.add(buttonc3);
-
-        // Añadir action listeners
-        buttonc1.addActionListener(new ActionListener() {
+        button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (device.getFullScreenWindow() != null && device.getFullScreenWindow().equals(frame)) {
                     device.setFullScreenWindow(null);
                 } else {
-                    frame.dispose();//para hacer cambios visibles
+                    frame.dispose(); // para hacer cambios visibles
                     device.setFullScreenWindow(frame);
                 }
             }
         });
-        
-        buttonc3.addActionListener(new ActionListener() {
+    
+        button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "menu");
             }
         });
-  
-
+    
         return panel;
     }
     private JPanel createJuegoPanel() {
-
         JPanel panel = new JPanel();
-
-        //Aqui se crean los elementos del juego
-        //Lo que mostrara el panel 
+    
+        // Usa GridBagLayout
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+    
+        // Crear etiqueta de título
         JLabel titulo = new JLabel("Probando Juego");
-        titulo.setBounds(0, 0, 400, 30);
-        titulo.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        JButton boton = new JButton("Salir");
-        boton.setBounds(100, 100, 100, 50);
-        panel.add(titulo);
-        panel.add(boton);
+        titulo.setFont(new Font("Arial", Font.BOLD, 30));
 
-        boton.addActionListener(new ActionListener() {
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 10, 0); // Márgenes
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo, constraints);
+    
+        // Crear botón
+        JButton botonSalir = new JButton("Salir");
+        constraints.gridy++;
+        panel.add(botonSalir, constraints);
+    
+        botonSalir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "menu");
                 juego.PararSonido();
             }
         });
-      
-        //Se pensara un menu para canciones en este apartado
-
+    
         return panel;
     }
+    
+  
+
 
 }
