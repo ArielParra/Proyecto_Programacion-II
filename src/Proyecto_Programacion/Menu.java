@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 public class Menu {
-    private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];//para pantalla completa
+    private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];//necesario pantalla completa
     private JFrame frame; //Ventana
     private CardLayout cardLayout;
     private JPanel cardPanel;
@@ -16,9 +16,8 @@ public class Menu {
     public Float gainControl = 0.0f;
 
     public Menu() {
-       // Cargar ruta de imagen de fondo
 
-
+        //Crear un nuevo juego
         this.juego = new Juego();
         
         //Crear la unica ventana JFrame
@@ -38,7 +37,7 @@ public class Menu {
         JPanel juegoPanel = createJuegoPanel();
         // Añadir paneles al CardLayout
         cardPanel.add(menuPanel, "menu");
-        cardPanel.add(menujuegoPanel, "juego");
+        cardPanel.add(juegoPanel, "juego");
         cardPanel.add(juego, "bolita");
         cardPanel.add(configPanel, "config");
 
@@ -52,23 +51,20 @@ public class Menu {
     }
 
     private JPanel createMenuPanel() {
-        
-    JPanel panel = new JPanel() {
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            try {
-                Image backgroundImageConfig = ImageIO.read(new File("images/fondo.jpg"));
-                g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
-            } catch (Exception e) {
-                e.printStackTrace();
-                setBackground(Color.LIGHT_GRAY);
+            
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondo.jpg"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
             }
-        }
-    };
-    panel.setLayout(null);
-
-
+        };    
         panel.setLayout(null);
 
         // Crear etiqueta de título
@@ -174,18 +170,15 @@ public class Menu {
         buttonc1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.setVisible(false);
-                frame.setUndecorated(true);
-                try{
-                            device.setFullScreenWindow(frame);/*TODO: no jala nose pq */
-
-                }catch(Exception ex){
-                    ex.printStackTrace();
+                if (device.getFullScreenWindow() != null && device.getFullScreenWindow().equals(frame)) {
+                    device.setFullScreenWindow(null);
+                } else {
+                    frame.dispose();//para hacer cambios visibles
+                    device.setFullScreenWindow(frame);
                 }
-                frame.setVisible(true);
-
             }
         });
+        
         buttonc3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
