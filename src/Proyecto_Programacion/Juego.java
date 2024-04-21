@@ -20,8 +20,8 @@ public class Juego extends JPanel {
     }
 
     public void Iniciar() {
-        reproducir("audio/startgame.wav");  
-        
+
+        reproducir("audio/startgame.wav");    
     }
    
     public void setVolumen(Float gainControl) {
@@ -61,4 +61,4 @@ public class Juego extends JPanel {
         // Limpia la lista después de detener los clips si ya no los necesitas
         clips.clear();
     }
-    }
+}

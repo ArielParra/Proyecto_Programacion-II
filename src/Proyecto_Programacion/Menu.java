@@ -6,46 +6,36 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-
 
 public class Menu {
+    private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];//para pantalla completa
     private JFrame frame; //Ventana
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private Image backgroundImage;
-    private Image backgroundImageConfig;
-    public Juego juego = new Juego();
+    public Juego juego;
     public Float gainControl = 0.0f;
 
     public Menu() {
        // Cargar ruta de imagen de fondo
-        try {
-            backgroundImage = ImageIO.read(new File("images/fondo.jpg")); 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            backgroundImageConfig = ImageIO.read(new File("images/fondoconfig.jpg")); 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        // Crear ventana JFrame
-        frame = new JFrame("Menu");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+
+        this.juego = new Juego();
+        
+        //Crear la unica ventana JFrame
+        this.frame = new JFrame("Guitar Hero");//titulo de la ventana permanentemente
+        this.frame.setMinimumSize(new Dimension(800, 600));
+        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Crear un CardLayout para administrar diferentes paneles
-        cardLayout = new CardLayout();
-        cardPanel = new JPanel(cardLayout);
+        this.cardLayout = new CardLayout();
+        this.cardPanel = new JPanel(cardLayout);
     
-
         // paneles
         JPanel menuPanel = createMenuPanel();
         JPanel configPanel = createConfigPanel();
         
-        JPanel menujuegoPanel = createJuegoPanel();
+        JPanel juegoPanel = createJuegoPanel();
         // Añadir paneles al CardLayout
         cardPanel.add(menuPanel, "menu");
         cardPanel.add(menujuegoPanel, "juego");
@@ -62,16 +52,23 @@ public class Menu {
     }
 
     private JPanel createMenuPanel() {
-        JPanel panel = new JPanel();
-
-        //pintar imagen de fondo a panel con graphics
-        panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        
+    JPanel panel = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            try {
+                Image backgroundImageConfig = ImageIO.read(new File("images/fondo.jpg"));
+                g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+            } catch (Exception e) {
+                e.printStackTrace();
+                setBackground(Color.LIGHT_GRAY);
             }
-        };
+        }
+    };
+    panel.setLayout(null);
+
+
         panel.setLayout(null);
 
         // Crear etiqueta de título
@@ -120,16 +117,20 @@ public class Menu {
     }
 
     private JPanel createConfigPanel() {
-        JPanel panel = new JPanel();
 
-        //pintar imagen de fondo a panel con graphics
-        panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
+    JPanel panel = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            try {
+                Image backgroundImageConfig = ImageIO.read(new File("images/fondoconfig.jpg"));
                 g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+            } catch (Exception e) {
+                e.printStackTrace();
+                setBackground(Color.BLUE);
             }
-        };
+        }
+    };
         panel.setLayout(null);
 
         // Crear etiqueta de título
@@ -139,7 +140,7 @@ public class Menu {
         panel.add(titulo);
 
         // Crear botones
-        JButton buttonc1 = new JButton("Dificultad");
+        JButton buttonc1 = new JButton("pantlla completa");
         buttonc1.setBounds(100, 50, 200, 30);
         panel.add(buttonc1);
         JLabel volumen = new JLabel("Volumen");
@@ -147,11 +148,13 @@ public class Menu {
         volumen.setForeground(Color.WHITE);
         volumen.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(volumen);
+
         // Crear un JSlider para ajustar el volumen
         JSlider volumenSlider = new JSlider(-50, 4, 0);
         volumenSlider.setValue(-10);
         volumenSlider.setBounds(100, 100, 200, 30);
         panel.add(volumenSlider);
+
         // Agregar un ChangeListener para ajustar el volumen en tiempo real
         volumenSlider.addChangeListener(e -> {
             float nuevoVolumen = volumenSlider.getValue();
@@ -167,17 +170,34 @@ public class Menu {
         buttonc3.setBounds(100, 200, 200, 30);
         panel.add(buttonc3);
 
-        // Añadir action listener a buttonc3
+        // Añadir action listeners
+        buttonc1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.setVisible(false);
+                frame.setUndecorated(true);
+                try{
+                            device.setFullScreenWindow(frame);/*TODO: no jala nose pq */
+
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+                frame.setVisible(true);
+
+            }
+        });
         buttonc3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "menu");
             }
         });
+  
 
         return panel;
     }
-    public JPanel createJuegoPanel() {
+    private JPanel createJuegoPanel() {
+
         JPanel panel = new JPanel();
 
         //Aqui se crean los elementos del juego
