@@ -74,10 +74,9 @@ public class Menu {
         titulo.setForeground(Color.WHITE);
         constraints.gridx = 0;
         constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 200, 0); 
+        panel.add(titulo,constraints);
         constraints.insets = new Insets(10, 0, 10, 0); // Márgenes
-        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
-        panel.add(titulo);
-    
         // Crear botones
         JButton button1 = new JButton("Jugar");
         button1.setPreferredSize(new Dimension(150, 50));
@@ -142,12 +141,13 @@ public class Menu {
         JLabel titulo = new JLabel("Configuracion");
         titulo.setFont(new Font("Arial", Font.BOLD, 30));
         titulo.setForeground(Color.WHITE);
-        panel.add(titulo);
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.insets = new Insets(10, 0, 10, 0); // Márgenes
+        constraints.insets = new Insets(10, 0, 100, 0); 
         constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
-      
+        panel.add(titulo,constraints);
+        constraints.insets = new Insets(10, 0, 10, 0); 
+
 
         // Crear botones
         JButton button1 = new JButton("Pantalla completa");
@@ -217,9 +217,11 @@ public class Menu {
 
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.insets = new Insets(10, 0, 10, 0); // Márgenes
+        constraints.insets = new Insets(10, 0, 200, 0); 
         constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
         panel.add(titulo, constraints);
+        constraints.insets = new Insets(10, 0, 10, 0); 
+
     
         // Crear botón
         JButton botonSalir = new JButton("Salir");
