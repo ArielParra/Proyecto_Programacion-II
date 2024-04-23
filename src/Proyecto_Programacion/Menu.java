@@ -33,12 +33,9 @@ public class Menu {
         // paneles
         JPanel menuPanel = createMenuPanel();
         JPanel configPanel = createConfigPanel();
-        
-        JPanel juegoPanel = createJuegoPanel();
         // Añadir paneles al CardLayout
         cardPanel.add(menuPanel, "menu");
-        cardPanel.add(juegoPanel, "juego");
-        cardPanel.add(juego, "bolita");
+        cardPanel.add(juego, "juego");
         cardPanel.add(configPanel, "config");
 
         // Añadir cardPanel a la ventana
@@ -99,6 +96,8 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "juego");
                 juego.Iniciar();
+                juego.requestFocusInWindow(); // Asegúrate de que el panel Juego tenga el foco
+                juego.repaint(); // Actualiza visualmente el panel Juego
             }
         });
     
