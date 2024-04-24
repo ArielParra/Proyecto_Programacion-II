@@ -5,9 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
 import java.io.File;
-import java.awt.event.ComponentEvent;
 
 public class Menu {
     private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
@@ -35,6 +33,7 @@ public class Menu {
         this.menuPanel = createMenuPanel();
         this.configPanel = createConfigPanel();
         this.pausaPanel = pauseMenu();
+        this.configJuego = createConfigJuego();
 
         // Crear un nuevo juego
         this.juego = new Juego(pausaPanel,configJuego);
@@ -43,6 +42,7 @@ public class Menu {
         layeredPane.add(juego, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(menuPanel, JLayeredPane.MODAL_LAYER);
         layeredPane.add(pausaPanel, JLayeredPane.MODAL_LAYER);
+        layeredPane.add(configJuego, JLayeredPane.MODAL_LAYER);
         layeredPane.add(configPanel, JLayeredPane.PALETTE_LAYER);
         
         resizewindow();
@@ -60,6 +60,7 @@ public class Menu {
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
+         configJuego.setBounds(0, 0, newSize.width, newSize.height);
          juego.setBounds(0, 0, newSize.width, newSize.height);
           
     }
@@ -113,6 +114,7 @@ public class Menu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Ajusta la visibilidad de los paneles según sea necesario+
+                juego.setFocusable(true);
                 juego.setVisible(true);
                 panel.setVisible(false);
                 pausaPanel.setVisible(false);
@@ -185,18 +187,18 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 juego.setVisible(true);
                 panel.setVisible(false);
-                configPanel.setVisible(false);
+                configJuego.setVisible(false);
                 juego.setFocusable(true);
                 juego.ReanudarSonido();
-                juego.requestFocusInWindow(); // Asegúrate de que el panel Juego tenga el foco
-                juego.repaint(); // Actualiza visualmente el panel Juego
+                juego.requestFocusInWindow(); 
+                juego.repaint(); 
             }
         });
     
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                configPanel.setVisible(true);
+                configJuego.setVisible(true);
                 panel.setVisible(false);
                 juego.setVisible(true);
             }
@@ -214,6 +216,85 @@ public class Menu {
     
         return panel;
     }
+    private JPanel createConfigJuego(){
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+               
+            }
+        };
+        // Usa GridBagLayout
+        panel.setOpaque(false);
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        // Crear etiqueta de título
+        JLabel titulo = new JLabel("Configuracion");
+        titulo.setFont(new Font("Arial", Font.BOLD, 30));
+        titulo.setForeground(Color.BLACK);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 100, 0); 
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo,constraints);
+        constraints.insets = new Insets(10, 0, 10, 0); 
+        // Crear botones
+        JButton button1 = new JButton("Pantalla completa");
+        button1.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button1, constraints);
+    
+        JLabel volumenLabel = new JLabel("Volumen");
+        volumenLabel.setForeground(Color.BLACK);
+        volumenLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        constraints.gridy++;
+        panel.add(volumenLabel, constraints);
+    
+        // Crear un JSlider para ajustar el volumen
+        JSlider volumenSlider = new JSlider(-50, 4, 0);
+        volumenSlider.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(volumenSlider, constraints);
+    
+        JButton button4 = new JButton("Controles");
+        button4.setPreferredSize(new Dimension(150, 50));
+
+        constraints.gridy++;
+        panel.add(button4, constraints);
+    
+        JButton button3 = new JButton("Volver al Menu");
+        button3.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button3, constraints);
+    
+        // Añadir action listeners a los botones
+        volumenSlider.addChangeListener(e -> {
+            gainControl = (float) volumenSlider.getValue();
+            juego.setVolumen(gainControl);
+        });
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (device.getFullScreenWindow() != null && device.getFullScreenWindow().equals(frame)) {
+                    device.setFullScreenWindow(null);
+                } else {
+                    frame.dispose(); // para hacer cambios visibles
+                    device.setFullScreenWindow(frame);
+                }
+                resizewindow();
+            }
+        });
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               menuPanel.setVisible(true);
+                panel.setVisible(false);
+                juego.setVisible(false);
+                juego.setFocusable(false);
+            }
+        });
+        return panel;
+    }
     private JPanel createConfigPanel() {
         JPanel panel = new JPanel() {
             @Override
@@ -228,7 +309,6 @@ public class Menu {
                 }
             }
         };
-    
         // Usa GridBagLayout
         panel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
