@@ -5,77 +5,82 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import javax.sound.sampled.*;
-import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.JButton;
+import javax.swing.*;
+import java.util.Collections;
 
 public class Juego extends JPanel {
 
     private Float volumen = 0.0f;
-    private StringBuilder text = new StringBuilder(); // Variable para almacenar letras ingresadas
-    private List<Clip> clips; // Lista para almacenar múltiples Sonidos
+    private List<Clip> clips; 
     private JButton amarillo;
     private JButton azul;
     private JButton rojo;
     private JButton verde;
 
-    public Juego() {
-        // Añadir KeyListener para escuchar eventos de teclado
+
+    public Juego(JPanel pausaPanel, JPanel configJuego) {
+        // Deshabilita el comportamiento predeterminado de la tecla Tab
+        setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
+        setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.emptySet());
+
+        pintarbase();
         addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
-                // Capturar la letra ingresada y agregarla a la variable `text`
-                text.append(e.getKeyChar());
-                // Volver a pintar el panel
-                repaint();
-                switch(e.getKeyChar()){
-                    case 'a':
+            public void keyPressed(KeyEvent e) {
+              
+                switch(e.getKeyCode()){
+                    case KeyEvent.VK_A:
                         amarillo.setBackground(Color.BLACK);
                         break;
-                    case 's':
+                    case KeyEvent.VK_S:
                         azul.setBackground(Color.BLACK);
                         break;
-                    case 'd':
+                    case KeyEvent.VK_D:
                         rojo.setBackground(Color.BLACK);
                         break;
-                    case 'f':
+                    case KeyEvent.VK_F:
                         verde.setBackground(Color.BLACK);
                         break;
-                    default:
-                        // Handle the default case here
-                        break;
-                }
-            }
-            @Override
-            public void keyReleased(KeyEvent e) {
-                switch(e.getKeyChar()){
-                    case 'a':
-                        amarillo.setBackground(Color.YELLOW);
-                        break;
-                    case 's':
-                        azul.setBackground(Color.BLUE);
-                        break;
-                    case 'd':
-                        rojo.setBackground(Color.RED);
-                        break;
-                    case 'f':
-                        verde.setBackground(Color.GREEN);
+                    case KeyEvent.VK_P:
+                        pausaPanel.setVisible(true);
+                        setVisible(true);
+                        PausarSonido();
+                        setFocusable(false);
                         break;
                     default:
-                        // Handle the default case here
                         break;
+                    }
+                } 
+            
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    switch (e.getKeyCode()) {
+                        case KeyEvent.VK_A:
+                            amarillo.setBackground(Color.YELLOW);
+                            break;
+                        case KeyEvent.VK_S:
+                            azul.setBackground(Color.BLUE);
+                            break;
+                        case KeyEvent.VK_D:
+                            rojo.setBackground(Color.RED);
+                            break;
+                        case KeyEvent.VK_F:
+                            verde.setBackground(Color.GREEN);
+                            break;
+                    }
                 }
-            }
         });
         setFocusable(true); // Hacer que el panel sea enfocable para capturar eventos de teclado
         clips = new ArrayList<>(); // Inicializar la lista de Sonidos
     }
 
     public void Iniciar() {
-        pintarbase();
+        PararSonido();
         reproducir("audio/startgame.wav");    
     }
     public void pintarbase(){
@@ -86,7 +91,6 @@ public class Juego extends JPanel {
         c.weighty = 1;
         c.anchor = GridBagConstraints.SOUTH;
         
-        //4 button base
         amarillo = new JButton("");
         amarillo.setBackground(Color.YELLOW);
         amarillo.setOpaque(true);
@@ -123,8 +127,7 @@ public class Juego extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.BLACK);
-        g.drawString(text.toString(), 10, 20); 
+        
     }
 
     public void setVolumen(Float gainControl) {
@@ -163,5 +166,21 @@ public class Juego extends JPanel {
         }
         // Limpia la lista después de detener los clips si ya no los necesitas
         clips.clear();
+    }
+    public void PausarSonido() {
+        // Pausar todos los Clips en la lista
+        for (Clip clip : clips) {
+            if (clip != null && clip.isRunning()) {
+                clip.stop(); // Pausar el Clip
+            }
+        }
+    }
+    public void ReanudarSonido() {
+        // Reanudar todos los Clips en la lista
+        for (Clip clip : clips) {
+            if (clip != null && !clip.isRunning()) {
+                clip.start(); // Reanudar el Clip
+            }
+        }
     }
 }

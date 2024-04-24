@@ -5,46 +5,63 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
 import java.io.File;
+import java.awt.event.ComponentEvent;
 
 public class Menu {
-    private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];//necesario pantalla completa
-    private JFrame frame; //Ventana
-    private CardLayout cardLayout;
-    private JPanel cardPanel;
+    private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+    private JFrame frame; // Ventana
     public Juego juego;
     public Float gainControl = 0.0f;
+    
+    // Usar JLayeredPane en lugar de JPanel
+    public JLayeredPane layeredPane;
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego;
 
     public Menu() {
-
-        //Crear un nuevo juego
-        this.juego = new Juego();
-        
-        //Crear la unica ventana JFrame
-        this.frame = new JFrame("Guitar Hero");//titulo de la ventana permanentemente
+        // Crear la única ventana JFrame
+        this.frame = new JFrame("Guitar Hero");
         this.frame.setMinimumSize(new Dimension(800, 600));
         this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Crear un CardLayout para administrar diferentes paneles
-        this.cardLayout = new CardLayout();
-        this.cardPanel = new JPanel(cardLayout);
-    
-        // paneles
-        JPanel menuPanel = createMenuPanel();
-        JPanel configPanel = createConfigPanel();
-        // Añadir paneles al CardLayout
-        cardPanel.add(menuPanel, "menu");
-        cardPanel.add(juego, "juego");
-        cardPanel.add(configPanel, "config");
+        // Crear un JLayeredPane para administrar la superposición de paneles
+        this.layeredPane = new JLayeredPane();
+        this.layeredPane.setPreferredSize(new Dimension(800, 600));
+        this.layeredPane.setLayout(null); // Usa un layout nulo para posicionar los paneles
 
-        // Añadir cardPanel a la ventana
-        frame.add(cardPanel);
+        // Crear paneles
+        this.menuPanel = createMenuPanel();
+        this.configPanel = createConfigPanel();
+        this.pausaPanel = pauseMenu();
 
-        // Poner visible la ventana
-        // Centrar el layout en la ventana
-        frame.setLayout(cardLayout);
+        // Crear un nuevo juego
+        this.juego = new Juego(pausaPanel,configJuego);
+
+        // Agregar paneles a JLayeredPane con niveles de capas
+        layeredPane.add(juego, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(menuPanel, JLayeredPane.MODAL_LAYER);
+        layeredPane.add(pausaPanel, JLayeredPane.MODAL_LAYER);
+        layeredPane.add(configPanel, JLayeredPane.PALETTE_LAYER);
+        
+        resizewindow();
+
+        // Añadir layeredPane a la ventana
+        frame.add(layeredPane);
+
+        // Mostrar la ventana
+        frame.pack();
         frame.setVisible(true);
+    }
+    public void resizewindow(){
+        Dimension newSize = frame.getSize();
+        // Ajustar el tamaño de los paneles para que coincida con el tamaño de la ventana
+         menuPanel.setBounds(0, 0, newSize.width, newSize.height);
+         pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
+         configPanel.setBounds(0, 0, newSize.width, newSize.height);
+         juego.setBounds(0, 0, newSize.width, newSize.height);
+          
     }
     private JPanel createMenuPanel() {
         JPanel panel = new JPanel() {
@@ -90,21 +107,28 @@ public class Menu {
         constraints.gridy++;
         panel.add(button3, constraints);
     
+        
         // Añadir action listeners a los botones
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "juego");
+                // Ajusta la visibilidad de los paneles según sea necesario+
+                juego.setVisible(true);
+                panel.setVisible(false);
+                pausaPanel.setVisible(false);
+                configPanel.setVisible(false);
                 juego.Iniciar();
-                juego.requestFocusInWindow(); // Asegúrate de que el panel Juego tenga el foco
-                juego.repaint(); // Actualiza visualmente el panel Juego
+                juego.requestFocusInWindow();
             }
         });
-    
+
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "config");
+                configPanel.setVisible(true);
+                panel.setVisible(false);
+                pausaPanel.setVisible(false);
+                juego.setVisible(false);
             }
         });
     
@@ -114,10 +138,82 @@ public class Menu {
                 System.exit(0);
             }
         });
+        return panel;
+    }
+    private JPanel pauseMenu() {
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+               
+            }
+        };
+        
+        panel.setOpaque(false);
+        // Usa GridBagLayout
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        // Crear etiqueta de título
+        JLabel titulo = new JLabel("Pausa");
+        titulo.setFont(new Font("Arial", Font.BOLD, 30));
+        titulo.setForeground(Color.BLACK);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 100, 0); 
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo,constraints);
+        constraints.insets = new Insets(10, 0, 10, 0); 
+
+        JButton button1 = new JButton("Continuar");
+        button1.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button1, constraints);
+    
+        JButton button2 = new JButton("Configuracion");
+        button2.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button2, constraints);
+    
+        JButton button3 = new JButton("Salir");
+        button3.setPreferredSize(new Dimension(150, 50));
+        constraints.gridy++;
+        panel.add(button3, constraints);
+    
+        // Añadir action listeners a los botones
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                juego.setVisible(true);
+                panel.setVisible(false);
+                configPanel.setVisible(false);
+                juego.setFocusable(true);
+                juego.ReanudarSonido();
+                juego.requestFocusInWindow(); // Asegúrate de que el panel Juego tenga el foco
+                juego.repaint(); // Actualiza visualmente el panel Juego
+            }
+        });
+    
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                configPanel.setVisible(true);
+                panel.setVisible(false);
+                juego.setVisible(true);
+            }
+        });
+    
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuPanel.setVisible(true);
+                panel.setVisible(false);
+                juego.setVisible(false);
+                juego.PararSonido();
+            }
+        });
     
         return panel;
     }
-    
     private JPanel createConfigPanel() {
         JPanel panel = new JPanel() {
             @Override
@@ -191,13 +287,16 @@ public class Menu {
                     frame.dispose(); // para hacer cambios visibles
                     device.setFullScreenWindow(frame);
                 }
+                resizewindow();
             }
         });
     
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "menu");
+               menuPanel.setVisible(true);
+                panel.setVisible(false);
+                juego.setVisible(false);
             }
         });
     
@@ -230,7 +329,7 @@ public class Menu {
         botonSalir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "menu");
+                menuPanel.setVisible(true);
                 juego.PararSonido();
             }
         });
