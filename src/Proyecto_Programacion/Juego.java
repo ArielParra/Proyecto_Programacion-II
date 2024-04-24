@@ -2,38 +2,36 @@ package Proyecto_Programacion;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 
 import javax.sound.sampled.*;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.*;
 import java.util.Collections;
 
 public class Juego extends JPanel {
 
     private Float volumen = 0.0f;
-    private List<Clip> clips; 
+    private Clip cancion; // Solo un clip para manejar la reproducción de audio
     private JButton amarillo;
     private JButton azul;
     private JButton rojo;
     private JButton verde;
 
-
     public Juego(JPanel pausaPanel, JPanel configJuego) {
-        // Deshabilita el comportamiento predeterminado de la tecla Tab
+        // Deshabilitar el comportamiento predeterminado de las teclas traversales
+        
         setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
         setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.emptySet());
 
         pintarbase();
+
+        // Añadir un KeyAdapter para manejar eventos de teclado
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-              
-                switch(e.getKeyCode()){
+                switch (e.getKeyCode()) {
                     case KeyEvent.VK_A:
                         amarillo.setBackground(Color.BLACK);
                         break;
@@ -48,49 +46,48 @@ public class Juego extends JPanel {
                         break;
                     case KeyEvent.VK_P:
                         pausaPanel.setVisible(true);
-                        setVisible(true);
                         PausarSonido();
-                        setFocusable(false);
                         break;
                     default:
                         break;
-                    }
-                } 
-            
-                @Override
-                public void keyReleased(KeyEvent e) {
-                    switch (e.getKeyCode()) {
-                        case KeyEvent.VK_A:
-                            amarillo.setBackground(Color.YELLOW);
-                            break;
-                        case KeyEvent.VK_S:
-                            azul.setBackground(Color.BLUE);
-                            break;
-                        case KeyEvent.VK_D:
-                            rojo.setBackground(Color.RED);
-                            break;
-                        case KeyEvent.VK_F:
-                            verde.setBackground(Color.GREEN);
-                            break;
-                    }
                 }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_A:
+                        amarillo.setBackground(Color.YELLOW);
+                        break;
+                    case KeyEvent.VK_S:
+                        azul.setBackground(Color.BLUE);
+                        break;
+                    case KeyEvent.VK_D:
+                        rojo.setBackground(Color.RED);
+                        break;
+                    case KeyEvent.VK_F:
+                        verde.setBackground(Color.GREEN);
+                        break;
+                }
+            }
         });
-        setFocusable(true); // Hacer que el panel sea enfocable para capturar eventos de teclado
-        clips = new ArrayList<>(); // Inicializar la lista de Sonidos
+
+        setFocusable(true);
     }
 
     public void Iniciar() {
         PararSonido();
-        reproducir("audio/startgame.wav");    
+        reproducir("audio/cancion.wav");
     }
-    public void pintarbase(){
+
+    public void pintarbase() {
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
         c.weighty = 1;
         c.anchor = GridBagConstraints.SOUTH;
-        
+
         amarillo = new JButton("");
         amarillo.setBackground(Color.YELLOW);
         amarillo.setOpaque(true);
@@ -121,65 +118,80 @@ public class Juego extends JPanel {
         verde.setPreferredSize(new Dimension(50, 50));
         c.gridx++;
         add(verde, c);
-        repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
     }
 
     public void setVolumen(Float gainControl) {
         volumen = gainControl;
     }
+
+    public float getVolumen() {
+        return volumen;
+    }
+
     public void reproducir(String ruta) {
         try {
+            // Detener la canción actual si está en ejecución
+            if (cancion != null) {
+                cancion.stop();
+                cancion.close();
+            }
+
             // Cargar el archivo de audio
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(ruta));
-            
-            // Crear un nuevo Clip
-            Clip nuevoClip = AudioSystem.getClip();
-            nuevoClip.open(audioInputStream);
-            
-            // Configurar el volumen
-            FloatControl gainControl = (FloatControl) nuevoClip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(volumen);
-            
-            // Iniciar la reproducción
-            nuevoClip.start();
-            
-            // Agregar el Clip a la lista
-            clips.add(nuevoClip);
+            cancion = AudioSystem.getClip();
+            cancion.open(audioInputStream);
 
+            FloatControl clipGainControl = (FloatControl) cancion.getControl(FloatControl.Type.MASTER_GAIN);
+            if (clipGainControl != null) {
+                clipGainControl.setValue(volumen);
+            }
+            // Iniciar la reproducción
+            cancion.start();
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
-    
     }
+
     public void PararSonido() {
-        // Detener todos los Clips en la lista
-        for (Clip clip : clips) {
-            if (clip != null && clip.isRunning()) {
-                clip.stop(); // Detener el Clip
-            }
+        if (cancion != null) {
+            cancion.stop();
+            cancion.close();
+            cancion = null;
         }
-        // Limpia la lista después de detener los clips si ya no los necesitas
-        clips.clear();
     }
+
     public void PausarSonido() {
-        // Pausar todos los Clips en la lista
-        for (Clip clip : clips) {
-            if (clip != null && clip.isRunning()) {
-                clip.stop(); // Pausar el Clip
-            }
+        if (cancion != null) {
+            cancion.stop();
         }
     }
+
     public void ReanudarSonido() {
-        // Reanudar todos los Clips en la lista
-        for (Clip clip : clips) {
-            if (clip != null && !clip.isRunning()) {
-                clip.start(); // Reanudar el Clip
+        if (cancion != null) {
+            // Reanudar el clip desde la posición actual
+            Clip canciontemp;
+            int posicion = cancion.getFramePosition();
+            cancion.close();
+            try {
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("audio/cancion.wav"));
+                canciontemp = AudioSystem.getClip();
+                canciontemp.open(audioInputStream);
+
+                FloatControl clipGainControl = (FloatControl) canciontemp.getControl(FloatControl.Type.MASTER_GAIN);
+                if (clipGainControl != null) {
+                    clipGainControl.setValue(volumen);
+                }
+
+                canciontemp.setFramePosition(posicion);
+                cancion = canciontemp;
+                cancion.start();
+            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+                e.printStackTrace();
             }
         }
     }

@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class Menu {
     private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
@@ -119,6 +121,7 @@ public class Menu {
                 panel.setVisible(false);
                 pausaPanel.setVisible(false);
                 configPanel.setVisible(false);
+                configJuego.setVisible(false);
                 juego.Iniciar();
                 juego.requestFocusInWindow();
             }
@@ -128,6 +131,7 @@ public class Menu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 configPanel.setVisible(true);
+                configJuego.setVisible(false);
                 panel.setVisible(false);
                 pausaPanel.setVisible(false);
                 juego.setVisible(false);
@@ -185,11 +189,11 @@ public class Menu {
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                juego.ReanudarSonido();
                 juego.setVisible(true);
                 panel.setVisible(false);
                 configJuego.setVisible(false);
                 juego.setFocusable(true);
-                juego.ReanudarSonido();
                 juego.requestFocusInWindow(); 
                 juego.repaint(); 
             }
@@ -262,7 +266,7 @@ public class Menu {
         constraints.gridy++;
         panel.add(button4, constraints);
     
-        JButton button3 = new JButton("Volver al Menu");
+        JButton button3 = new JButton("Volver");
         button3.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
         panel.add(button3, constraints);
@@ -271,6 +275,13 @@ public class Menu {
         volumenSlider.addChangeListener(e -> {
             gainControl = (float) volumenSlider.getValue();
             juego.setVolumen(gainControl);
+            
+        });
+        panel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                volumenSlider.setValue((int) juego.getVolumen());
+            }
         });
         button1.addActionListener(new ActionListener() {
             @Override
@@ -287,10 +298,8 @@ public class Menu {
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               menuPanel.setVisible(true);
+                pausaPanel.setVisible(true);
                 panel.setVisible(false);
-                juego.setVisible(false);
-                juego.setFocusable(false);
             }
         });
         return panel;
@@ -352,12 +361,21 @@ public class Menu {
         button3.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
         panel.add(button3, constraints);
-    
-        // Añadir action listeners a los botones
+        
+      
+
+        panel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                volumenSlider.setValue((int) juego.getVolumen());
+            }
+        });
         volumenSlider.addChangeListener(e -> {
             gainControl = (float) volumenSlider.getValue();
             juego.setVolumen(gainControl);
         });
+
+
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
