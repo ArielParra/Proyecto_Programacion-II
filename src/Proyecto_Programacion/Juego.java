@@ -9,22 +9,26 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Juego extends JPanel {
 
-    private Float volumen = 0.0f;
+    private Float volumen;
     private Clip cancion; // Solo un clip para manejar la reproducción de audio
     private JButton amarillo;
+    public boolean enPausa = false;
     private JButton azul;
     private JButton rojo;
     private JButton verde;
+    public List<Ficha> fichas = new ArrayList<>();
 
     public Juego(JPanel pausaPanel, JPanel configJuego) {
         // Deshabilitar el comportamiento predeterminado de las teclas traversales
-        
+        this.volumen = 0.0f;
         setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
         setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.emptySet());
-
         pintarbase();
 
         // Añadir un KeyAdapter para manejar eventos de teclado
@@ -45,8 +49,17 @@ public class Juego extends JPanel {
                         verde.setBackground(Color.BLACK);
                         break;
                     case KeyEvent.VK_P:
-                        pausaPanel.setVisible(true);
-                        PausarSonido();
+                        enPausa = !enPausa;
+                        
+                        if (enPausa) {
+                            pausaPanel.setVisible(true);
+                            setFocusable(false);
+                            PausarSonido();
+                        } else {
+                            pausaPanel.setVisible(false);
+                            setFocusable(true);
+                            ReanudarSonido();
+                        }
                         break;
                     default:
                         break;
@@ -78,6 +91,74 @@ public class Juego extends JPanel {
     public void Iniciar() {
         PararSonido();
         reproducir("audio/cancion.wav");
+        Thread hiloJuego = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                cicloPrincipalJuego();
+            }
+        });
+        hiloJuego.start();
+
+        
+    }
+    public void Salirdeljuego(){
+        synchronized(fichas){
+        for(Ficha ficha : fichas){
+            fichas.remove(ficha);
+        }
+        }   
+    }
+    public void cicloPrincipalJuego() {
+        long tiempoViejo = System.nanoTime();
+        long tiempoUltimaFicha = tiempoViejo;
+    
+        while (true) {
+            try {
+
+                if(!enPausa) {
+                    Thread.sleep(10);
+                    long tiempoNuevo = System.nanoTime();
+                    float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f; 
+                    tiempoViejo = tiempoNuevo;
+        
+                    if ((tiempoNuevo - tiempoUltimaFicha) >= 0_500_000_000f) {
+                        crearFicha();
+                        tiempoUltimaFicha = tiempoNuevo;
+                    }
+        
+                    synchronized (fichas) {
+                        Iterator<Ficha> iterator = fichas.iterator();
+                        while (iterator.hasNext()) {
+                            Ficha ficha = iterator.next();
+                            ficha.fisica(dt);
+                            
+                            // Si la ficha llegó al final, eliminarla
+                            if (ficha.y >= getHeight()) {
+                                iterator.remove();
+                            }
+                        }
+                    }
+                    repaint();
+                }
+                else{
+                    long tiempoNuevo = System.nanoTime();
+                    tiempoViejo = tiempoNuevo;
+                    
+                }
+    
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+
+    
+    
+    public void crearFicha(){
+        int columna = (int)(Math.random()*4); 
+        Ficha ficha = new Ficha(columna,this);
+        fichas.add(ficha);
     }
 
     public void pintarbase() {
@@ -118,12 +199,27 @@ public class Juego extends JPanel {
         verde.setPreferredSize(new Dimension(50, 50));
         c.gridx++;
         add(verde, c);
+
+
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
+        List<Ficha> fichasCopia;
+        synchronized (fichas) {
+            fichasCopia = new ArrayList<>(fichas);
+        }
+        
+        Color[] color = {Color.YELLOW, Color.BLUE, Color.RED, Color.GREEN};
+        for (Ficha ficha : fichasCopia) {
+            System.out.println(fichasCopia.size());
+            g.setColor(color[ficha.columna]);
+            g.fillOval((int) ficha.x, (int) ficha.y, 50, 50);
+        }
     }
+    
 
     public void setVolumen(Float gainControl) {
         volumen = gainControl;
@@ -135,13 +231,10 @@ public class Juego extends JPanel {
 
     public void reproducir(String ruta) {
         try {
-            // Detener la canción actual si está en ejecución
             if (cancion != null) {
                 cancion.stop();
                 cancion.close();
             }
-
-            // Cargar el archivo de audio
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(ruta));
             cancion = AudioSystem.getClip();
             cancion.open(audioInputStream);
@@ -150,7 +243,6 @@ public class Juego extends JPanel {
             if (clipGainControl != null) {
                 clipGainControl.setValue(volumen);
             }
-            // Iniciar la reproducción
             cancion.start();
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();

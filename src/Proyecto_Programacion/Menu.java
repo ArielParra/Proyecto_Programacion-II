@@ -29,7 +29,7 @@ public class Menu {
         // Crear un JLayeredPane para administrar la superposición de paneles
         this.layeredPane = new JLayeredPane();
         this.layeredPane.setPreferredSize(new Dimension(800, 600));
-        this.layeredPane.setLayout(null); // Usa un layout nulo para posicionar los paneles
+        this.layeredPane.setLayout(null);
 
         // Crear paneles
         this.menuPanel = createMenuPanel();
@@ -48,6 +48,7 @@ public class Menu {
         layeredPane.add(configPanel, JLayeredPane.PALETTE_LAYER);
         
         resizewindow();
+      
 
         // Añadir layeredPane a la ventana
         frame.add(layeredPane);
@@ -111,19 +112,19 @@ public class Menu {
         panel.add(button3, constraints);
     
         
-        // Añadir action listeners a los botones
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ajusta la visibilidad de los paneles según sea necesario+
-                juego.setFocusable(true);
-                juego.setVisible(true);
+
                 panel.setVisible(false);
+                juego.setVisible(true);
                 pausaPanel.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
-                juego.Iniciar();
+                juego.setFocusable(true);
                 juego.requestFocusInWindow();
+                juego.Iniciar();
+
             }
         });
 
@@ -190,6 +191,7 @@ public class Menu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 juego.ReanudarSonido();
+                juego.enPausa = false;
                 juego.setVisible(true);
                 panel.setVisible(false);
                 configJuego.setVisible(false);
@@ -214,6 +216,8 @@ public class Menu {
                 menuPanel.setVisible(true);
                 panel.setVisible(false);
                 juego.setVisible(false);
+                juego.Salirdeljuego();
+                juego.repaint();
                 juego.PararSonido();
             }
         });
