@@ -16,17 +16,24 @@ import java.util.List;
 public class Juego extends JPanel {
 
     private Float volumen;
-    private Clip cancion; // Solo un clip para manejar la reproducción de audio
+    private String mensajeFalla = "";
+    private String mensajegood = "";
+    private Clip cancion;
     private JButton amarillo;
     public boolean enPausa = false;
     private JButton azul;
+    private Thread hiloJuego;
     private JButton rojo;
     private JButton verde;
+    public int score = 0;
+    public int combo = 0;
+    public int fails = 0;
     public List<Ficha> fichas = new ArrayList<>();
 
     public Juego(JPanel pausaPanel, JPanel configJuego) {
-        // Deshabilitar el comportamiento predeterminado de las teclas traversales
         this.volumen = 0.0f;
+        // Deshabilitar el comportamiento predeterminado de las teclas traversales
+
         setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
         setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.emptySet());
         pintarbase();
@@ -91,7 +98,7 @@ public class Juego extends JPanel {
     public void Iniciar() {
         PararSonido();
         reproducir("audio/cancion.wav");
-        Thread hiloJuego = new Thread(new Runnable() {
+         hiloJuego = new Thread(new Runnable() {
             @Override
             public void run() {
                 cicloPrincipalJuego();
@@ -102,55 +109,139 @@ public class Juego extends JPanel {
         
     }
     public void Salirdeljuego(){
+     
+        score = 0;
+        combo = 0;
+        fails = 0;
+        enPausa = false;
+        mensajeFalla = "";
+        
+
         synchronized(fichas){
-        for(Ficha ficha : fichas){
-            fichas.remove(ficha);
+            fichas.clear();
         }
-        }   
+        PararSonido();
+           // Detener el hilo de juego
+        if (hiloJuego != null && hiloJuego.isAlive()) {
+        hiloJuego.interrupt();
+        hiloJuego = null;
+    }
     }
     public void cicloPrincipalJuego() {
         long tiempoViejo = System.nanoTime();
         long tiempoUltimaFicha = tiempoViejo;
-    
-        while (true) {
+        int aumento = 5;
+        boolean perfecto = false;
+        combo = 0;
+        while (!Thread.currentThread().isInterrupted()) { // Aquí se comprueba si el hilo ha sido interrumpido
             try {
-
-                if(!enPausa) {
+                if (!enPausa) {
                     Thread.sleep(10);
                     long tiempoNuevo = System.nanoTime();
-                    float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f; 
+                    float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f;
                     tiempoViejo = tiempoNuevo;
-        
+    
                     if ((tiempoNuevo - tiempoUltimaFicha) >= 0_500_000_000f) {
                         crearFicha();
                         tiempoUltimaFicha = tiempoNuevo;
                     }
-        
+    
                     synchronized (fichas) {
                         Iterator<Ficha> iterator = fichas.iterator();
                         while (iterator.hasNext()) {
                             Ficha ficha = iterator.next();
                             ficha.fisica(dt);
-                            
+                            if (ficha.y + 50 >= getHeight() - 50) {
+                                if(ficha.y + 50 >= getHeight() - 10){
+                                    aumento =10;
+                                    perfecto = true;
+                                }else{
+                                    aumento = 5;
+                                    perfecto = false;
+                                }
+
+                                switch (ficha.columna) {
+                                    case 0:
+                                        if (amarillo.getBackground() == Color.BLACK) {
+                                            score += aumento;
+                                            combo++;
+                                            if(perfecto){
+                                                mensajegood = "¡Perfecto!";
+                                            }else{
+                                                mensajegood = "¡Bien!";
+                                            }
+                                            mensajeFalla = "";
+                                            iterator.remove();
+                                        }
+                                        break;
+                                    case 1:
+                                        if (azul.getBackground() == Color.BLACK) {
+                                            score += aumento;
+                                            combo++;
+                                            if(perfecto){
+                                                mensajegood = "¡Perfecto!";
+                                            }else{
+                                                mensajegood = "¡Bien!";
+                                            }
+                                            mensajeFalla = "";
+                                            iterator.remove();
+                                        }
+                                        break;
+                                    case 2:
+                                        if (rojo.getBackground() == Color.BLACK) {
+                                            score += aumento;
+                                            combo++;
+                                            if(perfecto){
+                                                mensajegood = "¡Perfecto!";
+                                            }else{
+                                                mensajegood = "¡Bien!";
+                                            }
+                                            mensajeFalla = "";
+                                            iterator.remove();
+                                        }
+                                        break;
+                                    case 3:
+                                        if (verde.getBackground() == Color.BLACK) {
+                                            score += aumento;
+                                            combo++;
+                                            if(perfecto){
+                                                mensajegood = "¡Perfecto!";
+                                            }else{
+                                                mensajegood = "¡Bien!";
+                                            }
+                                            mensajeFalla = "";
+                                            iterator.remove();
+                                        }
+                                        break;
+                                }
+                            }
                             // Si la ficha llegó al final, eliminarla
                             if (ficha.y >= getHeight()) {
                                 iterator.remove();
+                                // pintar fallaste
+                                combo = 0;
+                                fails++;
+                                mensajeFalla = "¡Fallaste!";
                             }
                         }
                     }
                     repaint();
-                }
-                else{
+                } else {
+                    Thread.sleep(10); // Aquí se puede interrumpir el hilo, y se lanzará InterruptedException
                     long tiempoNuevo = System.nanoTime();
                     tiempoViejo = tiempoNuevo;
-                    
+    
                 }
     
+            } catch (InterruptedException e) {
+                // Manejo de la excepción
+                Thread.currentThread().interrupt(); // Restablecer la bandera de interrupción
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+    
     
 
     
@@ -207,6 +298,29 @@ public class Juego extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
+        //score
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Score: " + score, 10, 20);
+        //combo
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Combo: " + combo, 10, 40);
+        //fails
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Fails: " + fails, 10, 60);
+
+        //mensaje de bien
+        g.setColor(Color.GREEN);    
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString(mensajegood, getWidth()/2 - 50, getHeight()/2 - 50);
+
+        //mensaje de falla
+        g.setColor(Color.RED);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString(mensajeFalla, getWidth()/2 - 50, getHeight()/2);
+
         List<Ficha> fichasCopia;
         synchronized (fichas) {
             fichasCopia = new ArrayList<>(fichas);
@@ -214,7 +328,6 @@ public class Juego extends JPanel {
         
         Color[] color = {Color.YELLOW, Color.BLUE, Color.RED, Color.GREEN};
         for (Ficha ficha : fichasCopia) {
-            System.out.println(fichasCopia.size());
             g.setColor(color[ficha.columna]);
             g.fillOval((int) ficha.x, (int) ficha.y, 50, 50);
         }

@@ -218,7 +218,6 @@ public class Menu {
                 juego.setVisible(false);
                 juego.Salirdeljuego();
                 juego.repaint();
-                juego.PararSonido();
             }
         });
     
