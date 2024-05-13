@@ -107,8 +107,7 @@ public class Juego extends JPanel {
     }
 
     public void Iniciar() {
-        //PararSonido();
-        //reproducir("audio/cancion.wav");
+        reproducir("audio/cancion.wav");
          hiloJuego = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -157,6 +156,7 @@ public class Juego extends JPanel {
                         tiempoUltimaFicha = tiempoNuevo;
                     }
                     requestFocus();
+                    requestFocusInWindow();
                     synchronized (fichas) {
                         Iterator<Ficha> iterator = fichas.iterator();
                         while (iterator.hasNext()) {
@@ -246,7 +246,7 @@ public class Juego extends JPanel {
                     }
                     repaint();
                 } else {
-                    Thread.sleep(cicloSleep); // Aquí se puede interrumpir el hilo, y se lanzará InterruptedException
+                    Thread.sleep(cicloSleep); 
                     long tiempoNuevo = System.nanoTime();
                     tiempoViejo = tiempoNuevo;
     
@@ -357,7 +357,15 @@ public class Juego extends JPanel {
             g.fillOval((int) ficha.x, (int) ficha.y, 50, 50);
         }
     }
-    
+    public void fichasrevalidate(){
+        List<Ficha> fichasCopia;
+        synchronized (fichas) {
+            fichasCopia = new ArrayList<>(fichas);
+        }
+        for (Ficha ficha : fichasCopia) {
+            ficha.revalidateposition();
+        }
+    }
 
     public void setVolumen(Float gainControl) {
         volumen = gainControl;

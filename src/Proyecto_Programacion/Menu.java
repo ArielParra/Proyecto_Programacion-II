@@ -54,7 +54,7 @@ public class Menu {
         frame.add(layeredPane);
 
         // Mostrar la ventana
-        //frame.setResizable(false);
+        frame.setResizable(false);
         frame.pack();
         frame.setVisible(true);
     }
@@ -302,6 +302,9 @@ public class Menu {
                     device.setFullScreenWindow(frame);
                 }
                 resizewindow();
+                juego.fichasrevalidate();
+                juego.repaint();
+                
             }
         });
         button3.addActionListener(new ActionListener() {
