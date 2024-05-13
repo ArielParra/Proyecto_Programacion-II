@@ -54,6 +54,7 @@ public class Menu {
         frame.add(layeredPane);
 
         // Mostrar la ventana
+        //frame.setResizable(false);
         frame.pack();
         frame.setVisible(true);
     }
@@ -75,6 +76,11 @@ public class Menu {
                 try {
                     Image backgroundImageConfig = ImageIO.read(new File("images/fondo.jpg"));
                     g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                    /*         
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondo.jpg"));
+                    setLayout(new BorderLayout());
+                    add(new JLabel(new ImageIcon(backgroundImageConfig)));
+                    */
                 } catch (Exception e) {
                     e.printStackTrace();
                     setBackground(Color.LIGHT_GRAY);

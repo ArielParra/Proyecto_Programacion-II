@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Juego extends JPanel {
-
+    private int cicloSleep;
     private Float volumen;
     private String mensajeFalla = "";
     private String mensajegood = "";
@@ -32,6 +32,14 @@ public class Juego extends JPanel {
     public List<Ficha> fichas = new ArrayList<>();
 
     public Juego(JPanel pausaPanel, JPanel configJuego) {
+        Runtime runtime = Runtime.getRuntime();
+        
+        if(runtime.availableProcessors()>2){
+            this.cicloSleep = 1;
+        } else {
+            this.cicloSleep = 10;
+        }
+
         this.volumen = 0.0f;
         // Deshabilitar el comportamiento predeterminado de las teclas traversales
 
@@ -99,8 +107,8 @@ public class Juego extends JPanel {
     }
 
     public void Iniciar() {
-        PararSonido();
-        reproducir("audio/cancion.wav");
+        //PararSonido();
+        //reproducir("audio/cancion.wav");
          hiloJuego = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -139,7 +147,7 @@ public class Juego extends JPanel {
         while (!Thread.currentThread().isInterrupted()) { // Aquí se comprueba si el hilo ha sido interrumpido
             try {
                 if (!enPausa) {
-                    Thread.sleep(10);
+                    Thread.sleep(cicloSleep);
                     long tiempoNuevo = System.nanoTime();
                     float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f;
                     tiempoViejo = tiempoNuevo;
@@ -148,7 +156,7 @@ public class Juego extends JPanel {
                         crearFicha();
                         tiempoUltimaFicha = tiempoNuevo;
                     }
-    
+                    requestFocus();
                     synchronized (fichas) {
                         Iterator<Ficha> iterator = fichas.iterator();
                         while (iterator.hasNext()) {
@@ -238,7 +246,7 @@ public class Juego extends JPanel {
                     }
                     repaint();
                 } else {
-                    Thread.sleep(10); // Aquí se puede interrumpir el hilo, y se lanzará InterruptedException
+                    Thread.sleep(cicloSleep); // Aquí se puede interrumpir el hilo, y se lanzará InterruptedException
                     long tiempoNuevo = System.nanoTime();
                     tiempoViejo = tiempoNuevo;
     
