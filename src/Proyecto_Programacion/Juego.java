@@ -18,6 +18,7 @@ public class Juego extends JPanel {
     private Float volumen;
     private String mensajeFalla = "";
     private String mensajegood = "";
+    private String mensajeperfect = "";
     private Clip cancion;
     private JButton amarillo;
     public boolean enPausa = false;
@@ -168,9 +169,11 @@ public class Juego extends JPanel {
                                             score += aumento;
                                             combo++;
                                             if(perfecto){
-                                                mensajegood = "¡Perfecto!";
+                                                mensajeperfect = "¡Perfecto!";
+                                                mensajegood = "";
                                             }else{
                                                 mensajegood = "¡Bien!";
+                                                mensajeperfect = "";
                                             }
                                             mensajeFalla = "";
                                             iterator.remove();
@@ -181,9 +184,11 @@ public class Juego extends JPanel {
                                             score += aumento;
                                             combo++;
                                             if(perfecto){
-                                                mensajegood = "¡Perfecto!";
+                                                mensajeperfect = "¡Perfecto!";
+                                                mensajegood = "";
                                             }else{
                                                 mensajegood = "¡Bien!";
+                                                mensajeperfect = "";
                                             }
                                             mensajeFalla = "";
                                             iterator.remove();
@@ -194,9 +199,11 @@ public class Juego extends JPanel {
                                             score += aumento;
                                             combo++;
                                             if(perfecto){
-                                                mensajegood = "¡Perfecto!";
+                                                mensajeperfect = "¡Perfecto!";
+                                                mensajegood = "";
                                             }else{
                                                 mensajegood = "¡Bien!";
+                                                mensajeperfect = "";
                                             }
                                             mensajeFalla = "";
                                             iterator.remove();
@@ -207,9 +214,11 @@ public class Juego extends JPanel {
                                             score += aumento;
                                             combo++;
                                             if(perfecto){
-                                                mensajegood = "¡Perfecto!";
+                                                mensajeperfect = "¡Perfecto!";
+                                                mensajegood = "";
                                             }else{
                                                 mensajegood = "¡Bien!";
+                                                mensajeperfect = "";
                                             }
                                             mensajeFalla = "";
                                             iterator.remove();
@@ -317,6 +326,12 @@ public class Juego extends JPanel {
         g.setColor(Color.GREEN);    
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString(mensajegood, getWidth()/2 - 50, getHeight()/2 - 50);
+        //mensaje de perfecto
+        g.setColor(Color.BLUE);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString(mensajeperfect, getWidth()/2 - 50, getHeight()/2 - 50);
+
+
 
         //mensaje de falla
         g.setColor(Color.RED);
