@@ -40,6 +40,8 @@ public class Juego extends JPanel {
 
         // Añadir un KeyAdapter para manejar eventos de teclado
         addKeyListener(new KeyAdapter() {
+
+            
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
