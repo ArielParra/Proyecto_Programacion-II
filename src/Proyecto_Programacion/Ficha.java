@@ -44,7 +44,7 @@ public class Ficha {
                 break;
         }
         this.y = this.y - ventantigua;
-        this.y += juego.getHeight()/2; 
+        this.y = juego.getHeight() - this.y; 
     }
     public void fisica(float dt){
         this.y+=this.vy*dt;
