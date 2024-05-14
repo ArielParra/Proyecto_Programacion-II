@@ -10,7 +10,7 @@ public class Ficha {
     public Ficha(int columna,Juego juego){
         this.y=juego.getHeight()/2;
         this.ventantigua = juego.getHeight() /2;
-        this.vy=200;
+        this.vy=300;
         this.columna=columna;
         this.juego=juego;
         switch(columna){

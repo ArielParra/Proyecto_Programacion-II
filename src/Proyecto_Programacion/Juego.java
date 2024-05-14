@@ -65,7 +65,7 @@
             addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyTyped(KeyEvent e) {
-                    if (grabar == 2) {
+                    if (grabar == 2 && tiempotranscurrido >= 1_100_00_000L) {
                         char tecla = e.getKeyChar(); // Obtener el carácter de la tecla presionada
                         System.out.println(tecla);
                         // Convertir el carácter a minúscula para la comparación
@@ -189,8 +189,7 @@
         }
         public void cicloPrincipalJuego(int banderagrabar) {
             long tiempoViejo = System.nanoTime();
-            long tiempoInicial = System.nanoTime();
-            long tiempoUltimaFicha = tiempoViejo;
+            long tiempoInicial = System.nanoTime();      
             int aumento = 5;
             boolean perfecto = false;
             combo = 0;
@@ -203,7 +202,6 @@
                         float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f;
                         tiempoViejo = tiempoNuevo;
                         tiempotranscurrido = tiempoNuevo - tiempoInicial;
-                        System.out.println(tiempotranscurrido);
                         if(cancion1!=null && banderagrabar==1){
                         
                         Iterator<LongIntPair> iterator2 = cancion1.iterator();
@@ -211,7 +209,7 @@
                             LongIntPair pair = iterator2.next();
                             long first = pair.getFirst();
                             int second = pair.getSecond();
-                            if (tiempotranscurrido >= first) {
+                            if (tiempotranscurrido >= first -1_000_000_000L ) {
                                 crearFicha(second);
                                 iterator2.remove(); 
                             }
