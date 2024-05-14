@@ -21,7 +21,6 @@
         private String mensajeperfect = "";
         private Clip cancion;
         private Thread hiloJuego;
-        public boolean enPausa = false;
         private boolean amarpress = false;
         private boolean azupress = false;
         private boolean rojopress = false;
@@ -30,14 +29,21 @@
         private CircularButton azul;
         private CircularButton rojo;
         private CircularButton verde;
-        private Color GOLD = new Color(138, 112, 8); // Valores RGB para el color dorado
+        private Color GOLD = new Color(200, 200, 8); // Valores RGB para el color dorado
 
 
-
+        public long tiempotranscurrido;
         public int score = 0;
         public int combo = 0;
         public int fails = 0;
+        public int grabar;
+        public int canciongrab;
+        public boolean enPausa = false;
         public List<Ficha> fichas = new ArrayList<>();
+        public List<LongIntPair> cancion1 = new ArrayList<>();
+        public List<LongIntPair> cancion2 = new ArrayList<>();
+        public List<LongIntPair> cancion3 = new ArrayList<>();
+
 
         public Juego(JPanel pausaPanel, JPanel configJuego) {
             Runtime runtime = Runtime.getRuntime();
@@ -57,8 +63,30 @@
 
             // Añadir un KeyAdapter para manejar eventos de teclado
             addKeyListener(new KeyAdapter() {
-
-                
+                @Override
+                public void keyTyped(KeyEvent e) {
+                    if (grabar == 2) {
+                        char tecla = e.getKeyChar(); // Obtener el carácter de la tecla presionada
+                        System.out.println(tecla);
+                        // Convertir el carácter a minúscula para la comparación
+                        switch (Character.toLowerCase(tecla)) {
+                            case 'a':
+                                cancion1.add(new LongIntPair(tiempotranscurrido, 0));
+                                break;
+                            case 's':
+                                cancion1.add(new LongIntPair(tiempotranscurrido, 1));
+                                break;
+                            case 'd':
+                                cancion1.add(new LongIntPair(tiempotranscurrido, 2));
+                                break;
+                            case 'f':
+                                cancion1.add(new LongIntPair(tiempotranscurrido, 3));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
                 @Override
                 public void keyPressed(KeyEvent e) {
                     switch (e.getKeyCode()) {
@@ -112,16 +140,33 @@
         }
 
         public void Iniciar() {
+            
             reproducir("audio/cancion.wav");
             hiloJuego = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    cicloPrincipalJuego();
+                    cicloPrincipalJuego(1);
                 }
             });
             hiloJuego.start();
 
             
+        }
+        public void IniciarGrabacion(int cancion){
+            
+            switch(cancion){
+                case 1:
+                    reproducir("audio/cancion.wav");
+                    this.canciongrab = 1;
+                    break;
+                default:break;
+            }
+            hiloJuego = new Thread(new Runnable(){
+                public void run(){
+                    cicloPrincipalJuego(2);
+                }
+            });
+            hiloJuego.start();
         }
         public void Salirdeljuego(){
         
@@ -142,12 +187,14 @@
             hiloJuego = null;
         }
         }
-        public void cicloPrincipalJuego() {
+        public void cicloPrincipalJuego(int banderagrabar) {
             long tiempoViejo = System.nanoTime();
+            long tiempoInicial = System.nanoTime();
             long tiempoUltimaFicha = tiempoViejo;
             int aumento = 5;
             boolean perfecto = false;
             combo = 0;
+            this.grabar = banderagrabar;
             while (!Thread.currentThread().isInterrupted()) { // Aquí se comprueba si el hilo ha sido interrumpido
                 try {
                     if (!enPausa) {
@@ -155,19 +202,32 @@
                         long tiempoNuevo = System.nanoTime();
                         float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f;
                         tiempoViejo = tiempoNuevo;
-        
-                        if ((tiempoNuevo - tiempoUltimaFicha) >= 0_500_000_000f) {
-                            crearFicha();
-                            tiempoUltimaFicha = tiempoNuevo;
+                        tiempotranscurrido = tiempoNuevo - tiempoInicial;
+                        System.out.println(tiempotranscurrido);
+                        if(cancion1!=null && banderagrabar==1){
+                        
+                        Iterator<LongIntPair> iterator2 = cancion1.iterator();
+                        while (iterator2.hasNext()) {
+                            LongIntPair pair = iterator2.next();
+                            long first = pair.getFirst();
+                            int second = pair.getSecond();
+                            if (tiempotranscurrido >= first) {
+                                crearFicha(second);
+                                iterator2.remove(); 
+                            }
                         }
+                        }   
+                    
                         requestFocusInWindow();
+
+                        if(banderagrabar==1){
                         synchronized (fichas) {
                             Iterator<Ficha> iterator = fichas.iterator();
                             while (iterator.hasNext()) {
                                 Ficha ficha = iterator.next();
                                 ficha.fisica(dt);
                                 if (ficha.y + 50 >= getHeight() - 50) {
-                                    if(ficha.y + 50 >= getHeight() - 50 && ficha.y + 50 <= getHeight()-49){
+                                    if(ficha.y + 50 >= getHeight() - 50 && ficha.y + 50 <= getHeight()-47){
                                 
                                     switch(ficha.columna){
                                         case 0:
@@ -274,6 +334,7 @@
                                 }
                             }
                         }
+                        }
                         repaint();
                     } else {
                         Thread.sleep(cicloSleep); 
@@ -284,7 +345,7 @@
         
                 } catch (InterruptedException e) {
                     // Manejo de la excepción
-                    Thread.currentThread().interrupt(); // Restablecer la bandera de interrupción
+                    Thread.currentThread().interrupt();Thread.currentThread().interrupt(); // Restablecer la bandera de interrupción
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -295,8 +356,7 @@
 
         
         
-        public void crearFicha(){
-            int columna = (int)(Math.random()*4); 
+        public void crearFicha(int columna){
             Ficha ficha = new Ficha(columna,this);
             fichas.add(ficha);
         }
