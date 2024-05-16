@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -17,7 +18,7 @@ public class Menu {
     
     // Usar JLayeredPane en lugar de JPanel
     public JLayeredPane layeredPane;
-    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanel;
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu;
 
     public Menu() {
         // Crear la única ventana JFrame
@@ -36,7 +37,8 @@ public class Menu {
         this.configPanel = createConfigPanel();
         this.pausaPanel = pauseMenu();
         this.configJuego = createConfigJuego();
-        this.CancionesPanel = createCancionesPanel();
+        this.CancionesPanelgrabar = createCancionesPanel(false);
+        this.CancionesPanelmenu = createCancionesPanel(true);
 
 
         // Crear un nuevo juego
@@ -45,7 +47,8 @@ public class Menu {
         // Agregar paneles a JLayeredPane con niveles de capas
         layeredPane.add(juego, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(menuPanel, JLayeredPane.MODAL_LAYER);
-        layeredPane.add(CancionesPanel,JLayeredPane.MODAL_LAYER);
+        layeredPane.add(CancionesPanelgrabar,JLayeredPane.MODAL_LAYER);
+        layeredPane.add(CancionesPanelmenu,JLayeredPane.MODAL_LAYER);
         layeredPane.add(pausaPanel, JLayeredPane.MODAL_LAYER);
         layeredPane.add(configJuego, JLayeredPane.MODAL_LAYER);
         layeredPane.add(configPanel, JLayeredPane.PALETTE_LAYER);
@@ -68,7 +71,8 @@ public class Menu {
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
-         CancionesPanel.setBounds(0,0, newSize.width,newSize.height);
+         CancionesPanelgrabar.setBounds(0,0, newSize.width,newSize.height);
+         CancionesPanelmenu.setBounds(0,0,newSize.width,newSize.height);
          configJuego.setBounds(0, 0, newSize.width, newSize.height);
          juego.setBounds(0, 0, newSize.width, newSize.height);
           
@@ -132,16 +136,13 @@ public class Menu {
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                CancionesPanelmenu.setVisible(true);
+                CancionesPanelgrabar.setVisible(false);
                 panel.setVisible(false);
-                juego.setVisible(true);
                 pausaPanel.setVisible(false);
-                CancionesPanel.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
-                juego.setFocusable(true);
-                juego.requestFocusInWindow();
-                juego.Iniciar();
+                
          
 
             }
@@ -153,7 +154,8 @@ public class Menu {
                 configPanel.setVisible(true);
                 configJuego.setVisible(false);
                 pausaPanel.setVisible(false);
-                CancionesPanel.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
                 panel.setVisible(false);
                 
             }
@@ -162,7 +164,7 @@ public class Menu {
         button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                CancionesPanel.setVisible(true);
+                CancionesPanelgrabar.setVisible(true);
                 pausaPanel.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
@@ -245,9 +247,15 @@ public class Menu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 menuPanel.setVisible(true);
+                CancionesPanelgrabar.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
                 panel.setVisible(false);
                 juego.setVisible(false);
-                juego.Salirdeljuego();
+                try {
+                    juego.Salirdeljuego(juego.grabar);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 juego.repaint();
             }
         });
@@ -438,7 +446,7 @@ public class Menu {
     
         return panel;
     }
-    private JPanel createCancionesPanel() {
+    private JPanel createCancionesPanel(boolean menu) {
         JPanel panel = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
@@ -491,19 +499,29 @@ public class Menu {
                 panel.setVisible(false);
                 juego.setVisible(true);
                 pausaPanel.setVisible(false);
-                CancionesPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
                 juego.setFocusable(true);
                 juego.requestFocusInWindow();
-                juego.IniciarGrabacion(1);
+                if(!menu) {
+                    juego.IniciarGrabacion(1);
+                } else{
+                    try {
+                        juego.Iniciar(1);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
         });
         botonSalir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 menuPanel.setVisible(true);
-                panel.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
             }
         });
     

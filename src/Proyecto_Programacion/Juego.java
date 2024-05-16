@@ -1,7 +1,11 @@
     package Proyecto_Programacion;
 
+    import java.io.BufferedReader;
     import java.io.File;
+    import java.io.FileReader;
+    import java.io.FileWriter;
     import java.io.IOException;
+    import java.io.PrintWriter;
 
     import javax.sound.sampled.*;
     import javax.swing.*;
@@ -12,6 +16,7 @@
     import java.util.Iterator;
     import java.util.ArrayList;
     import java.util.List;
+    import java.util.ListIterator;
 
     public class Juego extends JPanel {
         private int cicloSleep;
@@ -44,7 +49,6 @@
         public List<LongIntPair> cancion2 = new ArrayList<>();
         public List<LongIntPair> cancion3 = new ArrayList<>();
 
-
         public Juego(JPanel pausaPanel, JPanel configJuego) {
             Runtime runtime = Runtime.getRuntime();
             
@@ -65,27 +69,26 @@
             addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyTyped(KeyEvent e) {
+                    char tecla = e.getKeyChar();
                     if (grabar == 2 && tiempotranscurrido >= 1_100_00_000L) {
-                        char tecla = e.getKeyChar(); // Obtener el carácter de la tecla presionada
-                        System.out.println(tecla);
-                        // Convertir el carácter a minúscula para la comparación
-                        switch (Character.toLowerCase(tecla)) {
-                            case 'a':
-                                cancion1.add(new LongIntPair(tiempotranscurrido, 0));
+                        switch (canciongrab) {
+                            case 1:
+                                // Acceder a la lista de la canción1 (cancion1)
+                                switchtecla(tecla,cancion1);
                                 break;
-                            case 's':
-                                cancion1.add(new LongIntPair(tiempotranscurrido, 1));
+                            case 2:
+                                // Acceder a la lista de la canción 2 (cancion2)
+                                switchtecla(tecla,cancion2);
                                 break;
-                            case 'd':
-                                cancion1.add(new LongIntPair(tiempotranscurrido, 2));
-                                break;
-                            case 'f':
-                                cancion1.add(new LongIntPair(tiempotranscurrido, 3));
+                            case 3:
+                                // Acceder a la lista de la canción 3 (cancion3)
+                                switchtecla(tecla,cancion3);
                                 break;
                             default:
                                 break;
                         }
                     }
+                    
                 }
                 @Override
                 public void keyPressed(KeyEvent e) {
@@ -138,10 +141,44 @@
 
             setFocusable(true);
         }
-
-        public void Iniciar() {
+        private void switchtecla(char tecla, List<LongIntPair> cancion){
+            switch (Character.toLowerCase(tecla)) {
+                case 'a':
+                    cancion.add(new LongIntPair(tiempotranscurrido, 0));
+                    break;
+                case 's':
+                    cancion.add(new LongIntPair(tiempotranscurrido, 1));
+                    break;
+                case 'd':
+                    cancion.add(new LongIntPair(tiempotranscurrido, 2));
+                    break;
+                case 'f':
+                    cancion.add(new LongIntPair(tiempotranscurrido, 3));
+                    break;
+                default:
+                    break;
+            }
+        }
+        public void Iniciar(int cancion) throws IOException {
             
-            reproducir("audio/cancion.wav");
+            switch(cancion){
+                case 1:
+                    leerDatosCancion(cancion1,new File("cancion1.txt"));
+                    reproducir("audio/cancion.wav");
+                    this.canciongrab = 1;
+                    break;
+                case 2:
+                    leerDatosCancion(cancion2, new File("cancion2.txt"));
+                    reproducir("audio/cancion2.wav");
+                    this.canciongrab = 2;
+                    break;
+                case 3:
+                    leerDatosCancion(cancion3, new File("cancion3.txt"));
+                    reproducir("audio/cancion3.wav");
+                    this.canciongrab = 3;
+                    break;
+                default:break;
+            }
             hiloJuego = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -168,7 +205,7 @@
             });
             hiloJuego.start();
         }
-        public void Salirdeljuego(){
+        public void Salirdeljuego(int menu) throws IOException{
         
             score = 0;
             combo = 0;
@@ -181,11 +218,45 @@
                 fichas.clear();
             }
             PararSonido();
-            // Detener el hilo de juego
+            if(menu==2){
+                switch(this.canciongrab){
+                    case 1:
+                        guardarDatosCancion(cancion1, new File("cancion1.txt"));
+                        break;
+                    case 2:
+                        guardarDatosCancion(cancion2,new File("cancion2.txt"));
+                        break;
+                    case 3:
+                        guardarDatosCancion(cancion3, new File("cancion3.txt"));
+                        break;
+                        default:
+                        break;
+                }
+            }
             if (hiloJuego != null && hiloJuego.isAlive()) {
             hiloJuego.interrupt();
             hiloJuego = null;
         }
+        }
+        private void leerDatosCancion(List<LongIntPair> cancion, File archivo) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader("saved/"+ archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length == 2) {
+                    long first = Long.parseLong(partes[0]);
+                    int second = Integer.parseInt(partes[1]);
+                    cancion.add(new LongIntPair(first, second));
+                }
+            }
+        }
+        }
+        private void guardarDatosCancion(List<LongIntPair> cancion, File archivo) throws IOException {
+            try (PrintWriter writer = new PrintWriter(new FileWriter("saved/"+ archivo))) {
+                for (LongIntPair pair : cancion) {
+                    writer.println(pair.getFirst() + "," + pair.getSecond());
+                }
+            }
         }
         public void cicloPrincipalJuego(int banderagrabar) {
             long tiempoViejo = System.nanoTime();
@@ -202,127 +273,145 @@
                         float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f;
                         tiempoViejo = tiempoNuevo;
                         tiempotranscurrido = tiempoNuevo - tiempoInicial;
-                        if(cancion1!=null && banderagrabar==1){
                         
-                        Iterator<LongIntPair> iterator2 = cancion1.iterator();
-                        while (iterator2.hasNext()) {
-                            LongIntPair pair = iterator2.next();
-                            long first = pair.getFirst();
-                            int second = pair.getSecond();
-                            if (tiempotranscurrido >= first -1_000_000_000L ) {
-                                crearFicha(second);
-                                iterator2.remove(); 
+                        if (banderagrabar == 1) {
+                            ListIterator<LongIntPair> iterator2 = null;
+                            switch(canciongrab){
+                                case 1: 
+                                    iterator2 = cancion1.listIterator();
+                                    break;
+                                case 2:
+                                    iterator2 = cancion2.listIterator();
+                                    break;
+                                case 3:
+                                    iterator2 = cancion3.listIterator();
+                                    break;
+                                    default:break;
+                            }
+                            
+                            while (iterator2.hasNext()) {
+                                LongIntPair pair = iterator2.next();
+                                long first = pair.getFirst();
+                                int second = pair.getSecond();
+                                if (tiempotranscurrido >= first - 1_000_000_000L) {
+                                    crearFicha(second);
+                                    iterator2.remove(); 
+                                }
+                            }
+                        }   
+                        
+                        requestFocusInWindow();
+        
+                        if (banderagrabar == 1) {
+                            synchronized (fichas) {
+                                Iterator<Ficha> iterator = fichas.iterator();
+                                while (iterator.hasNext()) {
+                                    Ficha ficha = iterator.next();
+                                    ficha.fisica(dt);
+                                    if (ficha.y + 50 >= getHeight() - 50) {
+                                        if (ficha.y + 50 >= getHeight() - 50 && ficha.y + 50 <= getHeight() - 47) {
+                                            switch (ficha.columna) {
+                                                case 0:
+                                                    if (amarillo.getColor() == GOLD) {
+                                                        amarpress = true;
+                                                    }
+                                                    break;
+                                                case 1:
+                                                    if (azul.getColor() == GOLD) {
+                                                        azupress = true;
+                                                    }
+                                                    break;
+                                                case 2:
+                                                    if (rojo.getColor() == GOLD) {
+                                                        rojopress = true;
+                                                    }
+                                                    break;
+                                                case 3:
+                                                    if (verde.getColor() == GOLD) {
+                                                        verpress = true;
+                                                    }
+                                                    break;
+                                            }
+                                        }
+                                        if (ficha.y + 50 >= getHeight() - 10 && ficha.y <= getHeight() - 40) {
+                                            aumento = 10;
+                                            perfecto = true;
+                                        } else {
+                                            aumento = 5;
+                                            perfecto = false;
+                                        }
+                                        
+                                        switch (ficha.columna) {
+                                            case 0:
+                                                if (amarillo.getColor() == GOLD && !amarpress) {
+                                                    score += aumento;
+                                                    combo++;
+                                                    if (perfecto) {
+                                                        mensajeperfect = "¡Perfecto!";
+                                                        mensajegood = "";
+                                                    } else {
+                                                        mensajegood = "¡Bien!";
+                                                        mensajeperfect = "";
+                                                    }
+                                                    mensajeFalla = "";
+                                                    iterator.remove();
+                                                }
+                                                break;
+                                            case 1:
+                                                if (azul.getColor() == GOLD && !azupress) {
+                                                    score += aumento;
+                                                    combo++;
+                                                    if (perfecto) {
+                                                        mensajeperfect = "¡Perfecto!";
+                                                        mensajegood = "";
+                                                    } else {
+                                                        mensajegood = "¡Bien!";
+                                                        mensajeperfect = "";
+                                                    }
+                                                    mensajeFalla = "";
+                                                    iterator.remove();
+                                                }
+                                                break;
+                                            case 2:
+                                                if (rojo.getColor() == GOLD && !rojopress) {
+                                                    score += aumento;
+                                                    combo++;
+                                                    if (perfecto) {
+                                                        mensajeperfect = "¡Perfecto!";
+                                                        mensajegood = "";
+                                                    } else {
+                                                        mensajegood = "¡Bien!";
+                                                        mensajeperfect = "";
+                                                    }
+                                                    mensajeFalla = "";
+                                                    iterator.remove();
+                                                }
+                                                break;
+                                            case 3:
+                                                if (verde.getColor() == GOLD && !verpress) {
+                                                    score += aumento;
+                                                    combo++;
+                                                    if (perfecto) {
+                                                        mensajeperfect = "¡Perfecto!";
+                                                        mensajegood = "";
+                                                    } else {
+                                                        mensajegood = "¡Bien!";
+                                                        mensajeperfect = "";
+                                                    }
+                                                    mensajeFalla = "";
+                                                    iterator.remove();
+                                                }
+                                                break;
+                                        }
+                                    }
+                                }
                             }
                         }
-                        }   
-                    
-                        requestFocusInWindow();
-
-                        if(banderagrabar==1){
+                        // Eliminar fichas que hayan llegado al final
                         synchronized (fichas) {
                             Iterator<Ficha> iterator = fichas.iterator();
                             while (iterator.hasNext()) {
                                 Ficha ficha = iterator.next();
-                                ficha.fisica(dt);
-                                if (ficha.y + 50 >= getHeight() - 50) {
-                                    if(ficha.y + 50 >= getHeight() - 50 && ficha.y + 50 <= getHeight()-47){
-                                
-                                    switch(ficha.columna){
-                                        case 0:
-                                            if(amarillo.getColor() == GOLD){
-                                                amarpress = true;
-                                            }
-                                            break;
-                                        case 1:
-                                            if(azul.getColor() == GOLD){
-                                                azupress = true;
-                                            }
-                                            break;
-                                        case 2:
-                                            if(rojo.getColor() == GOLD){
-                                                rojopress = true;
-                                            }
-                                            break;
-                                        case 3:
-                                            if(verde.getColor() == GOLD){
-                                                verpress = true;
-                                            }
-                                            break;
-                                    }
-                                    }
-                                    if(ficha.y + 50 >= getHeight() - 10 && ficha.y <= getHeight()- 40) {
-                                        aumento =10;
-                                        perfecto = true;
-                                    }else{
-                                        aumento = 5;
-                                        perfecto = false;
-                                    }
-                                    
-                                    switch (ficha.columna) {
-                                        case 0:
-                                            
-                                            if (amarillo.getColor() == GOLD && !amarpress){
-                                                score += aumento;
-                                                combo++;
-                                                if(perfecto){
-                                                    mensajeperfect = "¡Perfecto!";
-                                                    mensajegood = "";
-                                                }else{
-                                                    mensajegood = "¡Bien!";
-                                                    mensajeperfect = "";
-                                                }
-                                                mensajeFalla = "";
-                                                iterator.remove();
-                                            }
-                                            break;
-                                        case 1:
-                                            if (azul.getColor() == GOLD && !azupress) {
-                                                score += aumento;
-                                                combo++;
-                                                if(perfecto){
-                                                    mensajeperfect = "¡Perfecto!";
-                                                    mensajegood = "";
-                                                }else{
-                                                    mensajegood = "¡Bien!";
-                                                    mensajeperfect = "";
-                                                }
-                                                mensajeFalla = "";
-                                                iterator.remove();
-                                            }
-                                            break;
-                                        case 2:
-                                            if (rojo.getColor() == GOLD && !rojopress) {
-                                                score += aumento;
-                                                combo++;
-                                                if(perfecto){
-                                                    mensajeperfect = "¡Perfecto!";
-                                                    mensajegood = "";
-                                                }else{
-                                                    mensajegood = "¡Bien!";
-                                                    mensajeperfect = "";
-                                                }
-                                                mensajeFalla = "";
-                                                iterator.remove();
-                                            }
-                                            break;
-                                        case 3:
-                                            if (verde.getColor() == GOLD && !verpress) {
-                                                score += aumento;
-                                                combo++;
-                                                if(perfecto){
-                                                    mensajeperfect = "¡Perfecto!";
-                                                    mensajegood = "";
-                                                }else{
-                                                    mensajegood = "¡Bien!";
-                                                    mensajeperfect = "";
-                                                }
-                                                mensajeFalla = "";
-                                                iterator.remove();
-                                            }
-                                            break;
-                                    }
-                                }
-                                // Si la ficha llegó al final, eliminarla
                                 if (ficha.y >= getHeight()) {
                                     iterator.remove();
                                     // pintar fallaste
@@ -332,15 +421,12 @@
                                 }
                             }
                         }
-                        }
                         repaint();
                     } else {
                         Thread.sleep(cicloSleep); 
                         long tiempoNuevo = System.nanoTime();
                         tiempoViejo = tiempoNuevo;
-        
                     }
-        
                 } catch (InterruptedException e) {
                     // Manejo de la excepción
                     Thread.currentThread().interrupt();Thread.currentThread().interrupt(); // Restablecer la bandera de interrupción
@@ -349,6 +435,7 @@
                 }
             }
         }
+        
         
         
 
