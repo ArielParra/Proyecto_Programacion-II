@@ -23,7 +23,6 @@ public class CircularButton extends JButton {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
 
-        // Dibujar el círculo
         int diameter = Math.min(getWidth(), getHeight());
         int x = (getWidth() - diameter) / 2;
         int y = (getHeight() - diameter) / 2;

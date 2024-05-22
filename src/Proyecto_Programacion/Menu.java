@@ -85,11 +85,7 @@ public class Menu {
                 try {
                     Image backgroundImageConfig = ImageIO.read(new File("images/fondo.jpg"));
                     g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
-                    /*         
-                    Image backgroundImageConfig = ImageIO.read(new File("images/fondo.jpg"));
-                    setLayout(new BorderLayout());
-                    add(new JLabel(new ImageIcon(backgroundImageConfig)));
-                    */
+                    
                 } catch (Exception e) {
                     e.printStackTrace();
                     setBackground(Color.LIGHT_GRAY);
@@ -224,7 +220,7 @@ public class Menu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 juego.ReanudarSonido();
-                juego.enPausa = false;
+                juego.setPausa(false);
                 juego.setVisible(true);
                 panel.setVisible(false);
                 configJuego.setVisible(false);
@@ -252,7 +248,11 @@ public class Menu {
                 panel.setVisible(false);
                 juego.setVisible(false);
                 try {
-                    juego.Salirdeljuego(juego.grabar);
+                    if(juego.getGrabando()){
+                        juego.Salirdeljuego(true);
+                    }else{
+                        juego.Salirdeljuego(false);
+                    }
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -355,7 +355,7 @@ public class Menu {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 try {
-                    Image backgroundImageConfig = ImageIO.read(new File("images/fondoconfig.jpg"));
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondoconfig.png"));
                     g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -506,7 +506,12 @@ public class Menu {
                 juego.setFocusable(true);
                 juego.requestFocusInWindow();
                 if(!menu) {
-                    juego.IniciarGrabacion(1);
+                    try {
+                        juego.IniciarGrabacion(1);
+                    } catch (IOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
                 } else{
                     try {
                         juego.Iniciar(1);
