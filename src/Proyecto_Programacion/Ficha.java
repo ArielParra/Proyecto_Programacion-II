@@ -6,13 +6,15 @@ public class Ficha {
     float ventantigua;
     double vy;
     int columna;
+    public long tiempo;
     public Juego juego;
-    public Ficha(int columna,Juego juego, boolean b){
+    public Ficha(long tiempo,int columna,Juego juego, boolean b){
         this.y=juego.getHeight()-50;
         this.ventantigua = juego.getHeight()-50;
         this.vy=300;
         this.columna=columna;
         this.juego=juego;
+        this.tiempo=tiempo;
         switch(columna){
             case 0:
                 this.x=juego.getWidth()/2 - ( 50 * 2);
@@ -28,12 +30,13 @@ public class Ficha {
                 break;
         }
     }
-    public Ficha(int columna,Juego juego){
+    public Ficha(long tiempo,int columna,Juego juego){
         this.y=juego.getHeight()/2;
         this.ventantigua = juego.getHeight() /2;
         this.vy=300;
         this.columna=columna;
         this.juego=juego;
+        this.tiempo=tiempo;
         switch(columna){
             case 0:
                 this.x=juego.getWidth()/2 - ( 50 * 2);

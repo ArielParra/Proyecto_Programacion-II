@@ -57,6 +57,7 @@
             private List<LongIntPair> cancion1 = new ArrayList<>();
             private List<LongIntPair> cancion2 = new ArrayList<>();
             private List<LongIntPair> cancion3 = new ArrayList<>();
+            private List<LongIntPair> listaCancion = new ArrayList<>();
 
             public Juego(JPanel pausaPanel, JPanel configJuego) {
                 Runtime runtime = Runtime.getRuntime();
@@ -114,6 +115,18 @@
                             case KeyEvent.VK_F:
                                 verde.setColor(GOLD);
                                 break;
+                            case KeyEvent.VK_Q:
+                              if(grabando){ amarillo.setColor(Color.BLACK);}
+                                break;
+                            case KeyEvent.VK_W:
+                              if(grabando){azul.setColor(Color.BLACK);}
+                                break;
+                            case KeyEvent.VK_E:
+                              if(grabando){rojo.setColor(Color.BLACK);}
+                                break;
+                            case KeyEvent.VK_R:
+                              if(grabando){verde.setColor(Color.BLACK);}
+                                break;
                             case KeyEvent.VK_P:
                                 enPausa = !enPausa;
                                     pausaPanel.setVisible(true);
@@ -122,7 +135,7 @@
                                 break;
                             case KeyEvent.VK_LEFT:
                                 if (tiempotranscurrido >= 50_000_000L) {
-                                    tiempoInicial += 50_000_000L;
+                                    tiempoInicial += 45_000_000L;
                                 } else {
                                     tiempoInicial += tiempotranscurrido;
                                 }
@@ -162,6 +175,18 @@
                             case KeyEvent.VK_F:
                                 verde.setColor(Color.GREEN);
                                 verpress = false;
+                                break;
+                            case KeyEvent.VK_Q:
+                                amarillo.setColor(Color.YELLOW);
+                                break;
+                            case KeyEvent.VK_W:
+                                azul.setColor(Color.BLUE);
+                                break;
+                            case KeyEvent.VK_E:
+                                rojo.setColor(Color.RED);
+                                break;
+                            case KeyEvent.VK_R:
+                                verde.setColor(Color.GREEN);
                                 break;
                             case KeyEvent.VK_LEFT:
                                 retroceder = false;
@@ -266,12 +291,15 @@
                 if(GuardarGrabacion){
                     switch(this.canciongrab){
                         case 1:
+                            cancion1 = listaCancion;
                             guardarDatosCancion(cancion1, new File("cancion1.txt"));
                             break;
                         case 2:
+                            cancion2 = listaCancion;
                             guardarDatosCancion(cancion2,new File("cancion2.txt"));
                             break;
                         case 3:
+                            cancion3 = listaCancion;
                             guardarDatosCancion(cancion3, new File("cancion3.txt"));
                             break;
                             default:
@@ -307,7 +335,7 @@
                 tiempoInicial = System.nanoTime();
                 long tiempoViejo = System.nanoTime();
                 grabando = true;
-                List<LongIntPair> listaCancion = null;
+                listaCancion = null;
                 switch (canciongrab) {
                     case 1:
                         listaCancion = cancion1;
@@ -324,6 +352,7 @@
                 long tiempoNuevo = System.nanoTime();
                 long tiempoRelativo = System.nanoTime();
                 long tiempoRetroceso = 0;
+
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
                         Thread.sleep(cicloSleep);
@@ -339,19 +368,24 @@
 
                         tiempotranscurrido = tiempoNuevo - tiempoInicial;
             
-                        System.out.println(tiempotranscurrido);
 
                         
-                        if (listaCancion != null) {
+                        if (listaCancion != null ) {
                             for (int i = 0; i < listaCancion.size(); i++) {
                                 LongIntPair pair = listaCancion.get(i);
                                 long first = pair.getFirst();
                                 int second = pair.getSecond();
-                                if (tiempotranscurrido <= first - 1_000_000_000L && ((first - 1_000_000_000L) - tiempotranscurrido) < 50_000_000L) {
+                                //Condicion de creacion de ficha TEMPORAL
+                                //Se cambiara por la comprobacion de la ficha asociada con el pair (tiempo,columna)
+
+                                if (tiempotranscurrido <= first - 1_000_000_000L /*&& ((first - 1_000_000_000L) - tiempotranscurrido) < 50_000_000L) */){
+                                  if(pair.getDisponible()){
                                     if (retroceder) {
-                                        crearFichaAbajo(second);
+                                        crearFichaAbajo(first,second);
                                     } else {
-                                        crearFicha(second);
+                                        crearFicha(first,second);
+                                    }
+                                    pair.setDisponible(false);
                                     }
                                 }
                             }
@@ -364,24 +398,62 @@
             
                         // Dentro del bucle de movimiento de fichas
                         synchronized (fichas) {
-                            for (int i = 0; i < fichas.size(); i++) {
-                                Ficha ficha = fichas.get(i);
+                            ListIterator<Ficha> iterator = fichas.listIterator();
+                            while (iterator.hasNext()) {
+                                Ficha ficha = iterator.next();
                                 if (retroceder) {
                                     ficha.fisicaB(dt);
                                 } else {
                                     ficha.fisica(dt);
                                 }
+                                if (ficha.y + 50 >= getHeight() - 50 && ficha.y + 50 <= getHeight()) {
+                                    switch (ficha.columna) {
+                                        case 0:
+                                            if (procesarEliminacionFicha(amarillo, ficha)) {
+                                                iterator.remove();
+                                            }
+                                            break;
+                                        case 1:
+                                            if (procesarEliminacionFicha(azul, ficha)) {
+                                                iterator.remove();
+                                            }
+                                            break;
+                                        case 2:
+                                            if (procesarEliminacionFicha(rojo, ficha)) {
+                                                iterator.remove();
+                                            }
+                                            break;
+                                        case 3:
+                                            if (procesarEliminacionFicha(verde, ficha)) {
+                                                iterator.remove();
+                                            }
+                                            break;
+                                    }
+                                }
                                 if (ficha.y >= getHeight()) {
                                     fichasEliminadas.add(ficha);
-                                    fichas.remove(i);
-                                    i--; // Decrementar el índice después de eliminar para evitar omitir elementos
+
+                                    for(int i=0;i<listaCancion.size();i++){
+                                        LongIntPair pair = listaCancion.get(i);
+                                        if(pair.getFirst() == ficha.tiempo){
+                                            pair.setDisponible(true);
+                                        }
+                                    }
+
+                                    iterator.remove();
                                 }
                                 if (ficha.y <= getHeight() / 2) {
-                                    fichas.remove(i);
-                                    i--; // Decrementar el índice después de eliminar para evitar omitir elementos
+                                    iterator.remove();
+                                    for(int i=0;i<listaCancion.size();i++){
+                                        LongIntPair pair = listaCancion.get(i);
+                                        if(pair.getFirst() == ficha.tiempo){
+                                            pair.setDisponible(true);
+                                        }
+                                    }
                                 }
                             }
                         }
+                        
             
                         if (retroceder) {
                             synchronized (fichas) {
@@ -402,7 +474,7 @@
             private void CicloPrincipalJuego() {
                 long tiempoViejo = System.nanoTime();
                 tiempoInicial = System.nanoTime();      
-        
+                fails = 0;
                 combo = 0;
                 grabando = false;
                 while (!Thread.currentThread().isInterrupted()) {
@@ -433,7 +505,7 @@
                                 long first = pair.getFirst();
                                 int second = pair.getSecond();
                                 if (tiempotranscurrido >= first - 1_000_000_000L) {
-                                    crearFicha(second);
+                                    crearFicha(first,second);
                                     iterator2.remove(); 
                                 }
                             }
@@ -515,12 +587,12 @@
                 }
             }
             
-            public void crearFicha(int columna){
-                Ficha ficha = new Ficha(columna,this);
+            public void crearFicha(long tiempo,int columna){
+                Ficha ficha = new Ficha(tiempo,columna,this);
                 fichas.add(ficha);
             }
-            public void crearFichaAbajo(int columna){
-                Ficha ficha = new Ficha(columna,this,true);
+            public void crearFichaAbajo(long tiempo, int columna){
+                Ficha ficha = new Ficha(tiempo,columna,this,true);
                 fichas.add(ficha);
             }
 
@@ -563,6 +635,7 @@
                 //fails
                 dibujarStats(g,"Fails: " + fails, 10, 60);
 
+                dibujarStats(g, "Tiempo: " + tiempotranscurrido / 1_000_000_000L,10,200 );
                 //mensaje de bien
                 dibujarmensaje(g,Color.GREEN,mensajegood, getWidth()/2 - 50, getHeight()/2 - 50);
 
@@ -687,6 +760,22 @@
                     iterator.remove();
                 }
             }
+            private boolean procesarEliminacionFicha(CircularButton color, Ficha ficha) {
+                boolean eliminado = false;
+                if (color.getColor() == Color.BLACK) {
+                    Iterator<LongIntPair> iterator = listaCancion.iterator();
+                    while (iterator.hasNext()) {
+                        LongIntPair pair = iterator.next();
+                        if (pair.getFirst() == ficha.tiempo) {
+                            iterator.remove();
+                            eliminado = true;
+                            break;
+                        }
+                    }
+                }
+                return eliminado;
+            }
+            
             private boolean TeclaSiendoPulsada(CircularButton color, boolean press){
                 if(color.getColor() == GOLD){
                     return true;
