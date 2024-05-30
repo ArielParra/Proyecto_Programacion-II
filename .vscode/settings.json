@@ -1,0 +1,18 @@
+{
+    "java.project.referencedLibraries": {
+        "include": [
+            "lib/**/*.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.base.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.controls.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.fxml.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.graphics.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.media.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.swing.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.web.jar",
+            "c:\\Users\\miguel\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx-swt.jar"
+        ],
+        "exclude": [
+            "lib/javafx-swt.jar"
+        ]
+    }
+}

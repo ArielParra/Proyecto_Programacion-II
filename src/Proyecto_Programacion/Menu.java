@@ -5,12 +5,8 @@ import javax.swing.*;
 
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.*;
 
 public class Menu extends JFrame{
@@ -21,6 +17,7 @@ public class Menu extends JFrame{
     
     // Usar JLayeredPane en lugar de JPanel
     public JLayeredPane layeredPane;
+    public VideoPanel videoPanel;
     public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu;
 
     public Menu(){
@@ -35,6 +32,8 @@ public class Menu extends JFrame{
         this.layeredPane.setPreferredSize(new Dimension(800, 600));
         this.layeredPane.setLayout(null);
 
+        this.videoPanel = new VideoPanel(); // Crea una instancia de VideoPanel
+
         // Crear paneles
         this.menuPanel = createMenuPanel();
         this.configPanel = createConfigPanel();
@@ -45,15 +44,16 @@ public class Menu extends JFrame{
 
 
         // Crear un nuevo juego
-        this.juego = new Juego(pausaPanel,configJuego);
+        this.juego = new Juego(pausaPanel,configJuego,videoPanel);
 
         // Agregar paneles a JLayeredPane con niveles de capas
-        layeredPane.add(juego, JLayeredPane.DEFAULT_LAYER);
-        layeredPane.add(menuPanel, JLayeredPane.MODAL_LAYER);
-        layeredPane.add(CancionesPanelgrabar,JLayeredPane.MODAL_LAYER);
-        layeredPane.add(CancionesPanelmenu,JLayeredPane.MODAL_LAYER);
-        layeredPane.add(pausaPanel, JLayeredPane.MODAL_LAYER);
-        layeredPane.add(configJuego, JLayeredPane.MODAL_LAYER);
+        layeredPane.add(videoPanel, JLayeredPane.DEFAULT_LAYER); // Agrega el VideoPanel al JLayeredPane
+        layeredPane.add(juego, JLayeredPane.MODAL_LAYER);
+        layeredPane.add(menuPanel, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(CancionesPanelgrabar,JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(CancionesPanelmenu,JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(pausaPanel, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(configJuego, JLayeredPane.PALETTE_LAYER);
         layeredPane.add(configPanel, JLayeredPane.PALETTE_LAYER);
 
         
@@ -62,7 +62,9 @@ public class Menu extends JFrame{
 
         // Añadir layeredPane a la ventana
         frame.add(layeredPane);
-
+        juego.setVisible(false);
+        videoPanel.setVisible(false);
+        menuPanel.setVisible(true);
         // Mostrar la ventana
         frame.setResizable(false);
         frame.pack();
@@ -71,6 +73,7 @@ public class Menu extends JFrame{
     public void resizewindow(){
         Dimension newSize = frame.getSize();
         // Ajustar el tamaño de los paneles para que coincida con el tamaño de la ventana
+        videoPanel.setBounds(0, 0, newSize.width, newSize.height);
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
@@ -134,6 +137,7 @@ public class Menu extends JFrame{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                
                 CancionesPanelmenu.setVisible(true);
                 CancionesPanelgrabar.setVisible(false);
                 panel.setVisible(false);
@@ -225,7 +229,7 @@ public class Menu extends JFrame{
         // Crear etiqueta de título
         JLabel titulo = new JLabel("Pausa");
         titulo.setFont(new Font("Arial", Font.BOLD, 30));
-        titulo.setForeground(Color.BLACK);
+        titulo.setForeground(Color.WHITE);
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.insets = new Insets(10, 0, 100, 0); 
@@ -254,6 +258,7 @@ public class Menu extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 juego.ReanudarSonido();
                 juego.setPausa(false);
+                videoPanel.reanudarReproduccion();
                 juego.setVisible(true);
                 panel.setVisible(false);
                 configJuego.setVisible(false);
@@ -285,6 +290,7 @@ public class Menu extends JFrame{
                         juego.Salirdeljuego(true);
                     }else{
                         juego.Salirdeljuego(false);
+                        videoPanel.salirDelVideo();
                     }
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -529,24 +535,36 @@ public class Menu extends JFrame{
         cancion1.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+                
+                juego.setOpaque(false);
                 panel.setVisible(false);
-                juego.setVisible(true);
                 pausaPanel.setVisible(false);
                 CancionesPanelmenu.setVisible(false);
                 CancionesPanelgrabar.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
-                juego.setFocusable(true);
-                juego.requestFocusInWindow();
+                
                 if(!menu) {
                     try {
+                        juego.setVisible(true);
+                        juego.setFocusable(true);
+                        juego.requestFocusInWindow();
                         juego.IniciarGrabacion(1);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                     try {
+                        juego.setVisible(true);
+                        videoPanel.setVisible(true);
+                        videoPanel.reproducir("audio/everlong.mp4");
                         juego.Iniciar(1);
+                        juego.setFocusable(true);
+                        juego.requestFocusInWindow();
+                        
+                        
+                       
+                      
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
