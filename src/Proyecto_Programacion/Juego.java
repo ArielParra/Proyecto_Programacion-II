@@ -1,6 +1,8 @@
 package Proyecto_Programacion;
 
 import java.io.BufferedReader;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -57,17 +59,17 @@ public class Juego extends JPanel {
     private List<LongIntPair> listaCancion = new ArrayList<>();
 
     private VideoPanel videoPanel;
-
+    private BufferedImage[] fichaimagenes = new BufferedImage[4];
     public Juego(JPanel pausaPanel, JPanel configJuego, VideoPanel videoPanel) {
-        Runtime runtime = Runtime.getRuntime();
-
-        if(runtime.availableProcessors()>2){
-            this.cicloSleep = 1;
-        } else {
-            this.cicloSleep = 10;
-        }
         this.videoPanel = videoPanel;
-
+        try{
+            fichaimagenes[0] = ImageIO.read(new File("images/fichaamarilla.png"));
+            fichaimagenes[1] = ImageIO.read(new File("images/fichaazul.png"));
+            fichaimagenes[2] = ImageIO.read(new File("images/ficharoja.png"));
+            fichaimagenes[3] = ImageIO.read(new File("images/fichaverde.png"));
+        }catch(IOException e){
+            e.printStackTrace();
+        }
         // Deshabilitando el comportamiento predeterminado de las teclas traversales
         setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
         setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.emptySet());
@@ -255,7 +257,7 @@ public class Juego extends JPanel {
         switch(cancion){
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
-                videoPanel.reproducir("audio/cancion.wav");
+                videoPanel.reproducir("audio/everlong.mp4");
                 this.canciongrab = 1;
                 break;
             case 2:
@@ -359,6 +361,7 @@ public class Juego extends JPanel {
         long tiempoPausaNuevo = 0;
         long tiempoRetroceso = 0;
         setFocusable(true);
+        requestFocus();
         while (!Thread.currentThread().isInterrupted()) {
             
             try {
@@ -681,10 +684,8 @@ public class Juego extends JPanel {
             fichasCopia = new ArrayList<>(fichas);
         }
         
-        Color[] color = {Color.YELLOW, Color.BLUE, Color.RED, Color.GREEN};
         for (Ficha ficha : fichasCopia) {
-            g.setColor(color[ficha.columna]);
-            g.fillOval((int) ficha.x, (int) ficha.y, 50, 50);
+            g.drawImage(fichaimagenes[ficha.columna],(int)ficha.x,(int) ficha.y, 50, 50, null);
         }
     }
     private void dibujarmensaje(Graphics g,Color color, String mensaje, int x, int y){
