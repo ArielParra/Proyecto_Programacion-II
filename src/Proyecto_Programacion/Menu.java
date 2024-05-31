@@ -23,7 +23,7 @@ public class Menu extends JFrame{
     public Menu(){
         // Crear la única ventana JFrame
         this.frame = new JFrame("Guitar Hero");
-        this.frame.setMinimumSize(new Dimension(800, 600));
+        this.frame.setMinimumSize(new Dimension(1000, 600));
         this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -38,7 +38,7 @@ public class Menu extends JFrame{
 
         // Crear un JLayeredPane para administrar la superposición de paneles
         this.layeredPane = new JLayeredPane();
-        this.layeredPane.setPreferredSize(new Dimension(800, 600));
+        this.layeredPane.setPreferredSize(new Dimension(1000, 600));
         this.layeredPane.setLayout(null);
 
         this.videoPanel = new VideoPanel(); // Crea una instancia de VideoPanel
