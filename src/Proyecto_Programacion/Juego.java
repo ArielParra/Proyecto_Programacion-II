@@ -254,6 +254,7 @@ public class Juego extends JPanel {
     public void IniciarGrabacion(int cancion) throws IOException{
         videoPanel.setVisible(true);
         videoPanel.setOpaque(false);
+        try{
         switch(cancion){
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
@@ -271,6 +272,9 @@ public class Juego extends JPanel {
                 this.canciongrab = 3;
                 break;
             default:break;
+        }}
+        catch(Exception e){
+            e.printStackTrace();
         }
         
         hiloJuego = new Thread(new Runnable(){
@@ -651,7 +655,6 @@ public class Juego extends JPanel {
         verde = new CircularButton(Color.GREEN);
         c.gridx++;
         add(verde, c);
-
         amarillo.requestFocus();
 
     }
