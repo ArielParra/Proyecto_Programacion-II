@@ -4,6 +4,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,10 +14,10 @@ public class VideoPanel extends JPanel {
     private String rutaVideo;
     private JFXPanel fxPanel;
     private MediaPlayer mediaPlayer;
+    private double volumen = 0.5; // Volumen inicial
 
     public VideoPanel() {
-        setOpaque(false); // Hace que el panel sea transparente
-        // Inicializar JFXPanel para JavaFX
+        setOpaque(false); 
         fxPanel = new JFXPanel();
         setLayout(new BorderLayout());
         add(fxPanel, BorderLayout.CENTER);
@@ -24,35 +25,34 @@ public class VideoPanel extends JPanel {
 
     public void reproducir(String ruta) {
         this.rutaVideo = ruta;
-        // Crear un nuevo objeto de archivo de medios con la ruta del video
-        File file = new File(ruta);
-        // Convertir la ruta del archivo a una URL
+        File file = new File(rutaVideo);
         String mediaUrl = file.toURI().toString();
-        // Crear un objeto Media con la URL del archivo de video
         Media media = new Media(mediaUrl);
-        // Crear un reproductor de medios con el objeto Media
         mediaPlayer = new MediaPlayer(media);
-        // Crear un visor de medios y agregarlo al panel de JavaFX
         javafx.scene.media.MediaView mediaView = new javafx.scene.media.MediaView(mediaPlayer);
         Scene scene = new Scene(new javafx.scene.layout.StackPane(mediaView));
         fxPanel.setScene(scene);
-        // Reproducir el video
         mediaPlayer.play();
+        mediaPlayer.setVolume(volumen);
+    }
+    public void setVolumen(double volumen) {
+        this.volumen = volumen;
+        if(mediaPlayer != null){
+        mediaPlayer.setVolume(volumen);
+        }
+    }
+    public double getVolumen() {
+        return volumen;
     }
     public void detenerReproduccion() {
         if (mediaPlayer != null) {
-            mediaPlayer.stop(); // Detener la reproducción del video
-            mediaPlayer.dispose(); // Liberar recursos del reproductor de medios
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
         }
     }
     public void salirDelVideo() {
-        // Detener la reproducción del video
         detenerReproduccion();
-        
-        // Eliminar el componente de JFXPanel
         fxPanel.setScene(null);
-        
-        // Liberar los recursos asociados al reproductor de medios
         mediaPlayer.dispose();
     }
     public void reanudarReproduccion() {
@@ -60,9 +60,24 @@ public class VideoPanel extends JPanel {
             mediaPlayer.play();
         }
     }        
+    public void pausarReproduccion() {
+        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.pause();
+        }
+    }
+    
+    public void setVideo(double segundos) {
+        if (mediaPlayer != null) {
+        Duration nuevaDuracion = Duration.seconds(segundos);
+            if (nuevaDuracion.lessThanOrEqualTo(mediaPlayer.getTotalDuration()) && nuevaDuracion.greaterThanOrEqualTo(Duration.ZERO)) {
+                mediaPlayer.seek(nuevaDuracion);
+            }
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Aquí puedes agregar dibujos personalizados si 
     }
+
 }

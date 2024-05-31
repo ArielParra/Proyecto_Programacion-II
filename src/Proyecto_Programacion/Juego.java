@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -16,16 +15,13 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-       
+import java.awt.Font;
+
 
 
 public class Juego extends JPanel {
 
-    private String mensajeFalla = "";
-    private String mensajegood = "";
-    private String mensajeperfect = "";
-
-    private Clip cancion;
+    private String mensaje= "";
 
     private Thread hiloJuego;
 
@@ -53,7 +49,6 @@ public class Juego extends JPanel {
     private int aumento = 5;
     private long tiempoInicial;
     private long tiempotranscurrido;
-    private Float volumen;
 
     private List<Ficha> fichas = new ArrayList<>();
     private List<LongIntPair> cancion1 = new ArrayList<>();
@@ -61,23 +56,23 @@ public class Juego extends JPanel {
     private List<LongIntPair> cancion3 = new ArrayList<>();
     private List<LongIntPair> listaCancion = new ArrayList<>();
 
+    private VideoPanel videoPanel;
+
     public Juego(JPanel pausaPanel, JPanel configJuego, VideoPanel videoPanel) {
         Runtime runtime = Runtime.getRuntime();
-        
+
         if(runtime.availableProcessors()>2){
             this.cicloSleep = 1;
         } else {
             this.cicloSleep = 10;
         }
+        this.videoPanel = videoPanel;
 
-        this.volumen = 0.0f;
-        // Deshabilitar el comportamiento predeterminado de las teclas traversales
-
+        // Deshabilitando el comportamiento predeterminado de las teclas traversales
         setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
         setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.emptySet());
         pintarbase();
 
-        // Añadir un KeyAdapter para manejar eventos de teclado
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -85,15 +80,12 @@ public class Juego extends JPanel {
                 if (grabando == true && tiempotranscurrido >= 1_100_00_000L) {
                     switch (canciongrab) {
                         case 1:
-                            // Acceder a la lista de la canción 1
                             switchtecla(tecla,cancion1);
                             break;
                         case 2:
-                            // Acceder a la lista de la canción 2 
                             switchtecla(tecla,cancion2);
                             break;
                         case 3:
-                            // Acceder a la lista de la canción 3 
                             switchtecla(tecla,cancion3);
                             break;
                         default:
@@ -131,13 +123,12 @@ public class Juego extends JPanel {
                         break;
                     case KeyEvent.VK_P:
                         enPausa = !enPausa;
-
-                            pausaPanel.setVisible(true);
-                            setFocusable(false);
-                            videoPanel.detenerReproduccion();
-                            PausarSonido();                       
+                        pausaPanel.setVisible(true);
+                        setFocusable(false);
+                        videoPanel.pausarReproduccion();
                         break;
                     case KeyEvent.VK_LEFT:
+                        videoPanel.pausarReproduccion();
                         if (tiempotranscurrido >= 50_000_000L) {
                             tiempoInicial += 45_000_000L;
                         } else {
@@ -147,11 +138,11 @@ public class Juego extends JPanel {
                         try {
                             Thread.sleep(10);
                         } catch (InterruptedException b) {
-                            // Handle the InterruptedException appropriately
                             b.printStackTrace();
                         }
                         break;
                     case KeyEvent.VK_RIGHT: 
+                        videoPanel.pausarReproduccion();
                             tiempoInicial -= 45_000_000L;
                             System.out.println(tiempotranscurrido);
                             
@@ -194,8 +185,14 @@ public class Juego extends JPanel {
                         break;
                     case KeyEvent.VK_LEFT:
                         retroceder = false;
+                        videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
+                        videoPanel.reanudarReproduccion();
                         break;
-
+                    case KeyEvent.VK_RIGHT:
+                        retroceder = false;
+                        videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
+                        videoPanel.reanudarReproduccion();
+                        break;
                         default:break;
                 }
             }
@@ -222,16 +219,17 @@ public class Juego extends JPanel {
         }
     }
     public void Iniciar(int cancion) throws IOException {
-        
+        videoPanel.setVisible(true);
+        videoPanel.setOpaque(false);
         switch(cancion){
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
-               // reproducir("audio/cancion.wav");
+                videoPanel.reproducir("audio/everlong.mp4");
                 this.canciongrab = 1;
                 break;
             case 2:
                 leerDatosCancion(cancion2, new File("cancion2.txt"));
-               // reproducir("audio/cancion2.wav");
+                videoPanel.reproducir("audio/one.mp4");
                 this.canciongrab = 2;
                 break;
             case 3:
@@ -252,21 +250,22 @@ public class Juego extends JPanel {
         
     }
     public void IniciarGrabacion(int cancion) throws IOException{
-            
+        videoPanel.setVisible(true);
+        videoPanel.setOpaque(false);
         switch(cancion){
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
-                reproducir("audio/cancion.wav");
+                videoPanel.reproducir("audio/cancion.wav");
                 this.canciongrab = 1;
                 break;
             case 2:
                 leerDatosCancion(cancion2, new File("cancion2.txt"));
-                reproducir("audio/cancion2.wav");
+                videoPanel.reproducir("audio/one.mp4");
                 this.canciongrab = 2;
                 break;
             case 3:
                 leerDatosCancion(cancion3, new File("cancion3.txt"));
-                reproducir("audio/cancion3.wav");
+                videoPanel.reproducir("audio/cancion3.wav");
                 this.canciongrab = 3;
                 break;
             default:break;
@@ -285,13 +284,13 @@ public class Juego extends JPanel {
         combo = 0;
         fails = 0;
         enPausa = false;
-        mensajeFalla = "";
+        mensaje= "";
         
 
         synchronized(fichas){
             fichas.clear();
         }
-        PararSonido();
+        videoPanel.salirDelVideo();
         if(GuardarGrabacion){
             switch(this.canciongrab){
                 case 1:
@@ -359,7 +358,7 @@ public class Juego extends JPanel {
         long tiempoViejoPausa = 0;
         long tiempoPausaNuevo = 0;
         long tiempoRetroceso = 0;
-
+        setFocusable(true);
         while (!Thread.currentThread().isInterrupted()) {
             
             try {
@@ -389,7 +388,7 @@ public class Juego extends JPanel {
                         // Condicion de creacion de ficha TEMPORAL
                         // Se cambiara por la comprobacion de la ficha asociada con el pair (tiempo,columna)
                         if(retroceder){
-                            if(tiempotranscurrido >= first - 800_000_000L && tiempotranscurrido <= first){
+                            if(tiempotranscurrido <= first && tiempotranscurrido >= first - 900_000_000L){
                                 if(pair.getDisponible()){
                                     crearFichaAbajo(first,second);
                                     pair.setDisponible(false);
@@ -397,7 +396,7 @@ public class Juego extends JPanel {
                             }
                         
                         }else{
-                            if(tiempotranscurrido >= first - 800_000_000L && tiempotranscurrido <= first ){
+                        if(tiempotranscurrido >= first - 900_000_000L && tiempotranscurrido <= first){
                                 if(pair.getDisponible()){
                                     crearFicha(first,second);
                                     pair.setDisponible(false);
@@ -516,6 +515,7 @@ public class Juego extends JPanel {
         while (!Thread.currentThread().isInterrupted()) {
             /*if(!cancion.isRunning() && !enPausa){
                 break;
+                //Entrar a menu de score
             }*/
             try {
                 if (!enPausa) {
@@ -533,7 +533,7 @@ public class Juego extends JPanel {
                         LongIntPair pair = iterator2.next();
                         long first = pair.getFirst();
                         int second = pair.getSecond();
-                        if (tiempotranscurrido >= first - 800_000_000L) {
+                        if (tiempotranscurrido >= first - 900_000_000L) {
                             crearFicha(first,second);
                             iterator2.remove(); 
                         }
@@ -599,7 +599,7 @@ public class Juego extends JPanel {
                             // pintar fallaste
                             combo = 0;
                             fails++;
-                            mensajeFalla = "¡Fallaste!";
+                            mensaje= "¡Fallaste!";
                         }
                     }
                 }
@@ -667,13 +667,14 @@ public class Juego extends JPanel {
 
         dibujarStats(g, "Tiempo: " + tiempotranscurrido / 1_000_000_000L,100,500);
         //mensaje de bien
-        dibujarmensaje(g,Color.GREEN,mensajegood, getWidth()/2 - 50, getHeight()/2 - 50);
-
-        //mensaje de perfecto
-        dibujarmensaje(g,Color.BLUE,mensajeperfect, getWidth()/2 - 50, getHeight()/2 - 50);
-
-        //mensaje de falla
-        dibujarmensaje(g,Color.RED,mensajeFalla, getWidth()/2 - 50, getHeight()/2);
+     
+        if(mensaje=="¡Bien!"){
+            dibujarmensaje(g,Color.GREEN,mensaje, getWidth()/2 - 50, getHeight()/2 - 50);
+        }else if(mensaje=="¡Perfecto!"){
+            dibujarmensaje(g,Color.BLUE,mensaje, getWidth()/2 - 50, getHeight()/2 - 50);
+        }else{
+            dibujarmensaje(g,Color.RED,mensaje, getWidth()/2 - 50, getHeight()/2 - 50);
+        }
 
         List<Ficha> fichasCopia;
         synchronized (fichas) {
@@ -705,74 +706,11 @@ public class Juego extends JPanel {
             ficha.revalidateposition();
         }
     }
-
-    public void setVolumen(Float gainControl) {
-        volumen = gainControl;
-    }
-
-    public float getVolumen() {
-        return volumen;
-    }
     public void setPausa(boolean pausa){
         enPausa = pausa;
     }
     public boolean getGrabando(){
         return grabando;
-    }
-    // Funciones Para el Sonido
-    public void reproducir(String ruta) {
-        try {
-            if (cancion != null) {
-                cancion.stop();
-                cancion.close();
-            }
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(ruta));
-            cancion = AudioSystem.getClip();
-            cancion.open(audioInputStream);
-
-            FloatControl clipGainControl = (FloatControl) cancion.getControl(FloatControl.Type.MASTER_GAIN);
-            if (clipGainControl != null) {
-                clipGainControl.setValue(volumen);
-            }
-            cancion.start();
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
-    public void PararSonido() {
-        if (cancion != null) {
-            cancion.stop();
-            cancion.close();
-            cancion = null;
-        }
-    }
-    public void PausarSonido() {
-        if (cancion != null) {
-            cancion.stop();
-        }
-    }
-    public void ReanudarSonido() {
-        if (cancion != null) {
-            Clip canciontemp;
-            int posicion = cancion.getFramePosition();
-            cancion.close();
-            try {
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("audio/cancion.wav"));
-                canciontemp = AudioSystem.getClip();
-                canciontemp.open(audioInputStream);
-
-                FloatControl clipGainControl = (FloatControl) canciontemp.getControl(FloatControl.Type.MASTER_GAIN);
-                if (clipGainControl != null) {
-                    clipGainControl.setValue(volumen);
-                }
-
-                canciontemp.setFramePosition(posicion);
-                cancion = canciontemp;
-                cancion.start();
-            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-                e.printStackTrace();
-            }
-        }
     }
     
     private void procesarFichaPresionada(CircularButton color, boolean press, Iterator<Ficha> iterator) {
@@ -780,13 +718,10 @@ public class Juego extends JPanel {
             score += aumento;
             combo++;
             if (perfecto) {
-                mensajeperfect = "¡Perfecto!";
-                mensajegood = "";
+                mensaje= "¡Perfecto!";
             } else {
-                mensajegood = "¡Bien!";
-                mensajeperfect = "";
+                mensaje= "¡Bien!";
             }
-            mensajeFalla = "";
             iterator.remove();
         }
     }
