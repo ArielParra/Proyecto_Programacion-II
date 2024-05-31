@@ -490,12 +490,12 @@ public class Menu extends JFrame{
         panel.add(titulo, constraints);
         constraints.insets = new Insets(10, 0, 10, 0); 
 
-        JButton cancion1 = createbutton("Cancion 1");
+        JButton cancion1 = createbutton("Everlong - Foo Fighters");
         
         constraints.gridy++;
         panel.add(cancion1,constraints);
 
-        JButton cancion2 = createbutton("Cancion 2");
+        JButton cancion2 = createbutton("One - Metallica");
 
         constraints.gridy++;
         panel.add(cancion2,constraints);
