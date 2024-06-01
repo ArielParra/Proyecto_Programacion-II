@@ -22,12 +22,11 @@ public class Menu extends JFrame{
 
     public Menu(){
         // Crear la única ventana JFrame
-        this.frame = new JFrame("Guitar Hero");
-        this.frame.setMinimumSize(new Dimension(800, 600));
-        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame = new JFrame("Meme Hero");
+        frame.setUndecorated(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cierra la aplicación al cerrar la ventana
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximiza la ventana al tamaño de la pantalla
 
-        // Cargar la fuente personalizada
         try {
             this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Runtoe.ttf")).deriveFont(12f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -65,10 +64,6 @@ public class Menu extends JFrame{
         layeredPane.add(configJuego, JLayeredPane.PALETTE_LAYER);
         layeredPane.add(configPanel, JLayeredPane.PALETTE_LAYER);
 
-        
-        resizewindow();
-      
-
         // Añadir layeredPane a la ventana
         frame.add(layeredPane);
         juego.setVisible(false);
@@ -76,8 +71,12 @@ public class Menu extends JFrame{
         menuPanel.setVisible(true);
         // Mostrar la ventana
         frame.setResizable(false);
-        frame.pack();
         frame.setVisible(true);
+        
+        
+        resizewindow();
+      
+
     }
     public void resizewindow(){
         Dimension newSize = frame.getSize();
@@ -127,8 +126,7 @@ public class Menu extends JFrame{
         panel.add(button1, constraints);
         
         JButton button4 = createbutton("Grabar");
-        button4.setPreferredSize(new Dimension(150,50));
-
+        
         constraints.gridy++;
         panel.add(button4,constraints);
     
@@ -300,20 +298,14 @@ public class Menu extends JFrame{
         constraints.insets = new Insets(10, 0, 100, 0); 
         constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
         panel.add(titulo,constraints);
-        constraints.insets = new Insets(10, 0, 10, 0); 
-        // Crear botones
-        JButton button1 = createbutton("Pantalla completa");
-        
-        constraints.gridy++;
-        panel.add(button1, constraints);
-    
+        constraints.insets = new Insets(10, 0, 10, 0);  
+
         JLabel volumenLabel = new JLabel("Volumen");
         volumenLabel.setForeground(Color.BLACK);
         volumenLabel.setFont(new Font("Arial", Font.BOLD, 20));
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
     
-        // Crear un JSlider para ajustar el volumen
         JSlider volumenSlider = new JSlider(-50, 4, 0);
         volumenSlider.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
@@ -330,7 +322,6 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(button3, constraints);
     
-        // Añadir action listeners a los botones
         volumenSlider.addChangeListener(e -> {
             gainControl = (float) volumenSlider.getValue();
             videoPanel.setVolumen((double)gainControl);
@@ -342,21 +333,7 @@ public class Menu extends JFrame{
                 volumenSlider.setValue((int) videoPanel.getVolumen());
             }
         });
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (device.getFullScreenWindow() != null && device.getFullScreenWindow().equals(frame)) {
-                    device.setFullScreenWindow(null);
-                } else {
-                    frame.dispose(); // para hacer cambios visibles
-                    device.setFullScreenWindow(frame);
-                }
-                resizewindow();
-                juego.fichasrevalidate();
-                juego.repaint();
-                
-            }
-        });
+ 
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -380,10 +357,8 @@ public class Menu extends JFrame{
                 }
             }
         };
-        // Usa GridBagLayout
         panel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        // Crear etiqueta de título
         JLabel titulo = new JLabel("Configuracion");
         titulo.setFont(customFont.deriveFont(35f));
         titulo.setForeground(Color.WHITE);
@@ -393,12 +368,6 @@ public class Menu extends JFrame{
         constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
         panel.add(titulo,constraints);
         constraints.insets = new Insets(10, 0, 10, 0); 
-
-
-        // Crear botones
-        JButton button1 = createbutton("Pantalla completa");
-        constraints.gridy++;
-        panel.add(button1, constraints);
     
         JLabel volumenLabel = new JLabel("Volumen");
         volumenLabel.setForeground(Color.WHITE);
@@ -406,7 +375,6 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
     
-        // Crear un JSlider para ajustar el volumen
         JSlider volumenSlider = new JSlider(-50, 4, 0);
         volumenSlider.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
@@ -437,19 +405,6 @@ public class Menu extends JFrame{
         });
 
 
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (device.getFullScreenWindow() != null && device.getFullScreenWindow().equals(frame)) {
-                    device.setFullScreenWindow(null);
-                } else {
-                    frame.dispose(); // para hacer cambios visibles
-                    device.setFullScreenWindow(frame);
-                }
-                resizewindow();
-            }
-        });
-
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -475,11 +430,9 @@ public class Menu extends JFrame{
                 }
             }
         };
-        // Usa GridBagLayout
         panel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
     
-        // Crear etiqueta de título
         JLabel titulo = new JLabel("Canciones");
         titulo.setFont(customFont.deriveFont(35f));
         titulo.setForeground(Color.WHITE);
@@ -505,8 +458,6 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(cancion3,constraints);
         
-        
-        // Crear botón
         JButton botonSalir = createbutton("Salir");
         constraints.gridy++;
         panel.add(botonSalir, constraints);
@@ -598,7 +549,7 @@ public class Menu extends JFrame{
         button.setFocusPainted(false);
         button.setFont(customFont.deriveFont(35f));
         FontMetrics fm = button.getFontMetrics(button.getFont());
-        int width = fm.stringWidth(text) + 125; // Ajuste adicional para el margen
+        int width = fm.stringWidth(text) + 180; // Ajuste adicional para el margen
         int height = fm.getHeight(); // Ajuste adicional para el margen
         button.setPreferredSize(new Dimension(width, height));
         button.addMouseListener(new MouseAdapter() {
