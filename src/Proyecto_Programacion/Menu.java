@@ -26,6 +26,10 @@ public class Menu extends JFrame{
         frame.setUndecorated(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cierra la aplicación al cerrar la ventana
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximiza la ventana al tamaño de la pantalla
+        this.frame = new JFrame("Guitar Hero");
+        this.frame.setMinimumSize(new Dimension(1000, 600));
+        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         try {
             this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Runtoe.ttf")).deriveFont(12f);
@@ -37,7 +41,7 @@ public class Menu extends JFrame{
 
         // Crear un JLayeredPane para administrar la superposición de paneles
         this.layeredPane = new JLayeredPane();
-        this.layeredPane.setPreferredSize(new Dimension(800, 600));
+        this.layeredPane.setPreferredSize(new Dimension(1000, 600));
         this.layeredPane.setLayout(null);
 
         this.videoPanel = new VideoPanel(); // Crea una instancia de VideoPanel
