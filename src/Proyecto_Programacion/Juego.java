@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -81,8 +82,17 @@ public class Juego extends JPanel {
 
     private VideoPanel videoPanel;
     private BufferedImage[] fichaimagenes = new BufferedImage[4];
+    private Font customFont;
     public Juego(JPanel pausaPanel, JPanel configJuego, VideoPanel videoPanel) {
         this.videoPanel = videoPanel;
+        try {
+            this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Runtoe.ttf")).deriveFont(12f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(customFont);
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+        }
+
         try{
             fichaimagenes[0] = ImageIO.read(new File("images/fichaamarilla.png"));
             fichaimagenes[1] = ImageIO.read(new File("images/fichaazul.png"));
@@ -256,7 +266,7 @@ public class Juego extends JPanel {
         long tiempoViejo = System.nanoTime();
         tiempoInicial = System.nanoTime();      
         fails = 0;
-        combo = 0;
+        combo = 1;
         failsconsecutivas = 0;
         consecutivas = 0;
         grabando = false;
@@ -295,7 +305,7 @@ public class Juego extends JPanel {
                         LongIntPair pair = iterator2.next();
                         long first = pair.getFirst();
                         int second = pair.getSecond();
-                        if (tiempotranscurrido >= first - 900_000_000L) {
+                        if (tiempotranscurrido >= first - 1_200_000_000L) {
                             crearFicha(first,second);
                             iterator2.remove(); 
                         }
@@ -686,9 +696,9 @@ public class Juego extends JPanel {
             }
         }
         if (hiloJuego != null && hiloJuego.isAlive()) {
-        hiloJuego.interrupt();
+        hiloJuego.interrupt();      
         hiloJuego = null;
-    }
+        }
     }
     private void leerDatosCancion(List<LongIntPair> cancion, File archivo) throws IOException {
     try (BufferedReader reader = new BufferedReader(new FileReader("saved/"+ archivo))) {
@@ -752,25 +762,23 @@ public class Juego extends JPanel {
 
         int panelHeight = getHeight();
         int marginLeft = 10;
-        int marginBottom = 20;
+        int marginBottom = 30;
 
         int scoreY = panelHeight - marginBottom;
         int comboY = scoreY - marginBottom;
-        int failsY = comboY - marginBottom;
-        int tiempoY = failsY - marginBottom;
+        int tiempoY = comboY - marginBottom;
 
         dibujarStats(g,"Score: " + score, marginLeft, scoreY);
         dibujarStats(g,"Combo: x" + combo, marginLeft, comboY);
-        dibujarStats(g,"Fails: " + fails, marginLeft, failsY);
         dibujarStats(g,"Tiempo: " + tiempotranscurrido / 1_000_000_000L, marginLeft, tiempoY);
 
      
         if(mensaje=="¡Bien!"){
-            dibujarmensaje(g,Color.GREEN,mensaje, getWidth()/2 - fichaheight, getHeight()/2 - fichaheight);
+            dibujarmensaje(g,Color.GREEN,mensaje, getWidth()/2 - fichaheight+20, getHeight()/2 - fichaheight);
         }else if(mensaje=="¡Perfecto!"){
-            dibujarmensaje(g,Color.BLUE,mensaje, getWidth()/2 - fichaheight, getHeight()/2 - fichaheight);
+            dibujarmensaje(g,Color.BLUE,mensaje, getWidth()/2 - fichaheight+20, getHeight()/2 - fichaheight);
         }else{
-            dibujarmensaje(g,Color.RED,mensaje, getWidth()/2 - fichaheight, getHeight()/2 - fichaheight);
+            dibujarmensaje(g,Color.RED,mensaje, getWidth()/2 - fichaheight+20, getHeight()/2 - fichaheight);
         }
 
         List<Ficha> fichasCopia;
@@ -784,12 +792,12 @@ public class Juego extends JPanel {
     }
     private void dibujarmensaje(Graphics g,Color color, String mensaje, int x, int y){
         g.setColor(color);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.setFont(customFont.deriveFont(30f));
         g.drawString(mensaje, x, y);
     }
     private void dibujarStats(Graphics g, String mensaje, int x, int y){
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.setFont(customFont.deriveFont(30f));
         g.drawString(mensaje, x, y);
     }
  

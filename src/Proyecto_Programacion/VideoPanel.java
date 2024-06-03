@@ -85,7 +85,10 @@ public class VideoPanel extends JPanel {
             mediaPlayer.pause();
         }
     }
-
+    public boolean isRunning(){
+        // Devuelve true si el video se está reproduciendo
+        return mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
+    }
     public void setVideo(double segundos) {
         if (mediaPlayer != null) {
             javafx.util.Duration nuevaDuracion = javafx.util.Duration.seconds(segundos);
