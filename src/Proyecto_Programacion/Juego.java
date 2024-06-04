@@ -80,15 +80,21 @@ public class Juego extends JPanel {
     private BufferedImage rojoelim;
     private BufferedImage verdeelim;
 
+    private BufferedImage scorebackground;
+
     private VideoPanel videoPanel;
+    private Menu menu;
     private BufferedImage[] fichaimagenes = new BufferedImage[4];
-    private Font customFont;
-    public Juego(JPanel pausaPanel, JPanel configJuego, VideoPanel videoPanel) {
-        this.videoPanel = videoPanel;
+    private Font customFont,customFont2;
+    public Juego(Menu menu) {
+        this.menu = menu;
+        this.videoPanel = menu.videoPanel;
         try {
             this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Runtoe.ttf")).deriveFont(12f);
+            this.customFont2 = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Gameplay.ttf")).deriveFont(20f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
+            ge.registerFont(customFont2);
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
@@ -110,6 +116,7 @@ public class Juego extends JPanel {
             azulelim = ImageIO.read(new File("images/azuleli.png"));
             rojoelim = ImageIO.read(new File("images/rojoeli.png"));
             verdeelim = ImageIO.read(new File("images/verdeeli.png"));
+            scorebackground = ImageIO.read(new File("images/score.png"));
 
         }catch(IOException e){
             e.printStackTrace();
@@ -185,7 +192,7 @@ public class Juego extends JPanel {
                         break;
                     case KeyEvent.VK_P:
                         enPausa = !enPausa;
-                        pausaPanel.setVisible(true);
+                        menu.pausaPanel.setVisible(true);
                         setFocusable(false);
                         videoPanel.pausarReproduccion();
                         break;
@@ -266,6 +273,9 @@ public class Juego extends JPanel {
         long tiempoViejo = System.nanoTime();
         tiempoInicial = System.nanoTime();      
         fails = 0;
+        score = 0;
+        enPausa = false;
+        mensaje = "";
         combo = 1;
         failsconsecutivas = 0;
         consecutivas = 0;
@@ -285,10 +295,15 @@ public class Juego extends JPanel {
                 break;
         }
         while (!Thread.currentThread().isInterrupted()) {
-            /*if(!cancion.isRunning() && !enPausa){
+            if(!videoPanel.isRunning() && !enPausa){
+                try{
+                    Salirdeljuego(false);
+                    break;
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
                 break;
-                //Entrar a menu de score
-            }*/
+            }
             try {
                 if (!enPausa) {
                     Thread.sleep(cicloSleep);
@@ -296,8 +311,6 @@ public class Juego extends JPanel {
                     float dt = (tiempoNuevo - tiempoViejo) / 1_000_000_000f;
                     tiempoViejo = tiempoNuevo;
                     tiempotranscurrido = tiempoNuevo - tiempoInicial;
-                    
-                    
                     
                     if (listaCancion != null) {
                         ListIterator<LongIntPair> iterator2 = listaCancion.listIterator();
@@ -397,13 +410,13 @@ public class Juego extends JPanel {
                             }
                             iterator.remove();
                             // pintar fallaste
-                            combo = 0;
+                            combo = 1;
                             fails++;
                             failsconsecutivas++;
-                            if(failsconsecutivas==10){
-                                Thread.currentThread().interrupt();
+                           /*  if(failsconsecutivas==10){
                                 Salirdeljuego(false);
-                            }
+                                break;
+                            }*/
                             consecutivas = 0;
                             mensaje= "¡Fallaste!";
                         }
@@ -611,7 +624,7 @@ public class Juego extends JPanel {
                 break;
             case 2:
                 leerDatosCancion(cancion2, new File("cancion2.txt"));
-                videoPanel.reproducir("audio/one.mp4");
+               // videoPanel.reproducir("audio/one.mp4");
                 this.canciongrab = 2;
                 break;
             case 3:
@@ -621,14 +634,19 @@ public class Juego extends JPanel {
                 break;
             default:break;
         }
-        hiloJuego = new Thread(new Runnable() {
+        videoPanel.setOnVideoReadyListener(new VideoPanel.VideoReadyListener() {
             @Override
-            public void run() {
-                CicloPrincipalJuego();
+            public void onReady() {
+                // Iniciar el ciclo principal del juego después de que el video esté listo
+                hiloJuego = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        CicloPrincipalJuego();
+                    }
+                });
+                hiloJuego.start();
             }
         });
-        hiloJuego.start();
-
         
     }
     public void IniciarGrabacion(int cancion) throws IOException{
@@ -664,42 +682,49 @@ public class Juego extends JPanel {
         });
         hiloJuego.start();
     }
-    public void Salirdeljuego(boolean GuardarGrabacion) throws IOException{
-    
-        score = 0;
-        combo = 0;
-        fails = 0;
-        enPausa = false;
-        mensaje= "";
+    public void Salirdeljuego(boolean GuardarGrabacion) throws IOException {
         
-
-        synchronized(fichas){
+        synchronized (fichas) {
             fichas.clear();
         }
-        videoPanel.salirDelVideo();
-        if(GuardarGrabacion){
-            switch(this.canciongrab){
+        if (GuardarGrabacion) {
+            switch (this.canciongrab) {
                 case 1:
                     cancion1 = listaCancion;
                     guardarDatosCancion(cancion1, new File("cancion1.txt"));
                     break;
                 case 2:
                     cancion2 = listaCancion;
-                    guardarDatosCancion(cancion2,new File("cancion2.txt"));
+                    guardarDatosCancion(cancion2, new File("cancion2.txt"));
                     break;
                 case 3:
                     cancion3 = listaCancion;
                     guardarDatosCancion(cancion3, new File("cancion3.txt"));
                     break;
-                    default:
+                default:
                     break;
             }
         }
-        if (hiloJuego != null && hiloJuego.isAlive()) {
-        hiloJuego.interrupt();      
-        hiloJuego = null;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                videoPanel.setVisible(false);
+                setVisible(false);
+                menu.puntaje.setText("Puntaje: " + score);
+                menu.fails.setText("Fails: " + fails);
+                menu.finalscore.setVisible(true);
+            }
+        });
+        try{if (hiloJuego != null && hiloJuego.isAlive()) {
+            hiloJuego.interrupt();
+            hiloJuego = null;
+        }}catch(Exception e){
+            e.printStackTrace();
         }
+        videoPanel.salirDelVideo();
+
     }
+    
     private void leerDatosCancion(List<LongIntPair> cancion, File archivo) throws IOException {
     try (BufferedReader reader = new BufferedReader(new FileReader("saved/"+ archivo))) {
         String linea;
@@ -760,19 +785,17 @@ public class Juego extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        int panelHeight = getHeight();
-        int marginLeft = 10;
-        int marginBottom = 30;
+        g.drawImage(scorebackground, 250, 550, 180,60, null);
+        dibujarStats(g, Integer.toString(score), 270, 588);
 
-        int scoreY = panelHeight - marginBottom;
-        int comboY = scoreY - marginBottom;
-        int tiempoY = comboY - marginBottom;
+        g.setColor(Color.WHITE);
+        g.setFont(customFont2.deriveFont(20f));
+        g.drawString("x", 300, 548);
+        g.setFont(customFont2.deriveFont(45f));
+        g.drawString(Integer.toString(combo), 330, 548);
 
-        dibujarStats(g,"Score: " + score, marginLeft, scoreY);
-        dibujarStats(g,"Combo: x" + combo, marginLeft, comboY);
-        dibujarStats(g,"Tiempo: " + tiempotranscurrido / 1_000_000_000L, marginLeft, tiempoY);
 
-     
+
         if(mensaje=="¡Bien!"){
             dibujarmensaje(g,Color.GREEN,mensaje, getWidth()/2 - fichaheight+20, getHeight()/2 - fichaheight);
         }else if(mensaje=="¡Perfecto!"){
@@ -792,12 +815,12 @@ public class Juego extends JPanel {
     }
     private void dibujarmensaje(Graphics g,Color color, String mensaje, int x, int y){
         g.setColor(color);
-        g.setFont(customFont.deriveFont(30f));
+        g.setFont(customFont.deriveFont(20f));
         g.drawString(mensaje, x, y);
     }
     private void dibujarStats(Graphics g, String mensaje, int x, int y){
-        g.setColor(Color.WHITE);
-        g.setFont(customFont.deriveFont(30f));
+        g.setColor(Color.GREEN);
+        g.setFont(customFont2.deriveFont(20f));
         g.drawString(mensaje, x, y);
     }
  
@@ -807,7 +830,13 @@ public class Juego extends JPanel {
     public boolean getGrabando(){
         return grabando;
     }
-    
+    public int getFinalscore(){
+        return score;
+    }
+    public int getFails(){
+        return fails;
+    }
+
     private void procesarFichaPresionada(BotonBase color, boolean press, Iterator<Ficha> iterator) {
         if (color.getPresionado() && !press) {
             switch(consecutivas){

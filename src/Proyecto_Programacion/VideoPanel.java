@@ -33,23 +33,32 @@ public class VideoPanel extends JPanel {
         Scene scene = new Scene(new javafx.scene.layout.StackPane(mediaView));
         fxPanel.setScene(scene);
 
-        // Configurar el tamaño del MediaView para que se ajuste a la pantalla completa
         mediaView.setPreserveRatio(true);
         mediaView.fitWidthProperty().bind(scene.widthProperty());
         mediaView.fitHeightProperty().bind(scene.heightProperty());
 
-        // Obtener la ventana primaria y configurarla para pantalla completa
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(fxPanel);
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frame.setUndecorated(true);
-            frame.setVisible(true);
-        });
-
+        
         mediaPlayer.play();
         mediaPlayer.setVolume(volumen);
+        mediaPlayer.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                // Notificar a cualquier listener que el video está listo
+                if (videoReadyListener != null) {
+                    videoReadyListener.onReady();
+                }
+            }
+        });
+    }
+    private VideoReadyListener videoReadyListener;
+
+    public interface VideoReadyListener {
+        void onReady();
     }
 
+    public void setOnVideoReadyListener(VideoReadyListener listener) {
+        this.videoReadyListener = listener;
+    }
     public void setVolumen(double volumen) {
         this.volumen = volumen;
         if(mediaPlayer != null){
@@ -70,9 +79,11 @@ public class VideoPanel extends JPanel {
 
     public void salirDelVideo() {
         detenerReproduccion();
-        fxPanel.setScene(null);
-        mediaPlayer.dispose();
+        if (mediaPlayer != null) {
+            mediaPlayer.dispose();
+        }
     }
+    
 
     public void reanudarReproduccion() {
         if (mediaPlayer != null) {

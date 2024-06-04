@@ -10,22 +10,23 @@ import java.io.IOException;
 import java.awt.event.*;
 
 public class Menu extends JFrame{
-    private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
-    private JFrame frame; // Ventana
     public Juego juego;
     public Float gainControl = 0.0f;
     private Font customFont; 
     // Usar JLayeredPane en lugar de JPanel
     public JLayeredPane layeredPane;
     public VideoPanel videoPanel;
-    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu;
-
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore;
+    public JLabel puntaje,fails;
     public Menu(){
         // Crear la única ventana JFrame
-        this.frame = new JFrame("Meme Hero");
-        frame.setUndecorated(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cierra la aplicación al cerrar la ventana
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximiza la ventana al tamaño de la pantalla
+        setTitle("Meme hero"); // Título de la ventana
+        setUndecorated(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cierra la aplicación al cerrar la ventana
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximiza la ventana al tamaño de la pantalla
+
+        this.puntaje = new JLabel();
+        this.fails = new JLabel();
 
         try {
             this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Runtoe.ttf")).deriveFont(12f);
@@ -42,22 +43,26 @@ public class Menu extends JFrame{
 
         this.videoPanel = new VideoPanel(); // Crea una instancia de VideoPanel
 
+
+        // Crear un nuevo juego
+        this.juego = new Juego(this);
+
         // Crear paneles
         this.menuPanel = createMenuPanel();
         this.configPanel = createConfigPanel();
         this.pausaPanel = pauseMenu();
         this.configJuego = createConfigJuego();
+        this.finalscore = createfinalscore();
         this.CancionesPanelgrabar = createCancionesPanel(false);
         this.CancionesPanelmenu = createCancionesPanel(true);
 
 
-        // Crear un nuevo juego
-        this.juego = new Juego(pausaPanel,configJuego,videoPanel);
 
         // Agregar paneles a JLayeredPane con niveles de capas
         layeredPane.add(videoPanel, JLayeredPane.DEFAULT_LAYER); // Agrega el VideoPanel al JLayeredPane
         layeredPane.add(juego, JLayeredPane.MODAL_LAYER);
         layeredPane.add(menuPanel, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(finalscore,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelgrabar,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelmenu,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(pausaPanel, JLayeredPane.PALETTE_LAYER);
@@ -65,13 +70,20 @@ public class Menu extends JFrame{
         layeredPane.add(configPanel, JLayeredPane.PALETTE_LAYER);
 
         // Añadir layeredPane a la ventana
-        frame.add(layeredPane);
-        juego.setVisible(false);
+        add(layeredPane);
+        setVisible(false);
         videoPanel.setVisible(false);
+        juego.setVisible(false);
+        pausaPanel.setVisible(false);
+        configPanel.setVisible(false);
+        configJuego.setVisible(false);
+        CancionesPanelgrabar.setVisible(false);
+        CancionesPanelmenu.setVisible(false);
+        finalscore.setVisible(false);
         menuPanel.setVisible(true);
         // Mostrar la ventana
-        frame.setResizable(false);
-        frame.setVisible(true);
+        setResizable(false);
+        setVisible(true);
         
         
         resizewindow();
@@ -79,10 +91,11 @@ public class Menu extends JFrame{
 
     }
     public void resizewindow(){
-        Dimension newSize = frame.getSize();
+        Dimension newSize = getSize();
         // Ajustar el tamaño de los paneles para que coincida con el tamaño de la ventana
         videoPanel.setBounds(0, 0, newSize.width, newSize.height);
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
+         finalscore.setBounds(0,0,newSize.width,newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
          CancionesPanelgrabar.setBounds(0,0, newSize.width,newSize.height);
@@ -484,16 +497,18 @@ public class Menu extends JFrame{
                         e1.printStackTrace();
                     }
                 } else{
-                    try {
-                        juego.setVisible(true);
-                        juego.Iniciar(1);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
-  
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
+                    SwingUtilities.invokeLater(() -> {
+                        try {
+                            juego.setVisible(true);
+                            juego.Iniciar(1);
+                            juego.setFocusable(true);
+                            juego.requestFocusInWindow();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    });
                 }
+
             }
         });
         cancion2.addActionListener(new ActionListener(){
@@ -507,25 +522,26 @@ public class Menu extends JFrame{
                 CancionesPanelgrabar.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
-                
                 if(!menu) {
                     try {
                         juego.setVisible(true);
-                        juego.IniciarGrabacion(2);
+                        juego.IniciarGrabacion(1);
                         juego.setFocusable(true);
                         juego.requestFocusInWindow();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
-                    try {
-                        juego.setVisible(true);
-                        juego.Iniciar(2);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
+                    SwingUtilities.invokeLater(() -> {
+                        try {
+                            juego.setVisible(true);
+                            juego.Iniciar(2);
+                            juego.setFocusable(true);
+                            juego.requestFocusInWindow();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    });
                 }
             }
         });
@@ -539,6 +555,61 @@ public class Menu extends JFrame{
         });
     
         return panel;
+    }
+    public JPanel createfinalscore(){
+      
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondocanciones.png"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        };
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel titulo = new JLabel("Puntaje Final");
+        titulo.setFont(customFont.deriveFont(35f));
+        titulo.setForeground(Color.WHITE);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 100, 0);
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo, constraints);
+        constraints.insets = new Insets(10, 0, 10, 0);
+
+        //Tomar el puntaje final del juego con getFinalscore
+        puntaje.setFont(customFont.deriveFont(35f));
+        puntaje.setForeground(Color.WHITE);
+        constraints.gridy++;
+        panel.add(puntaje, constraints);
+
+        //Tomar fails del juego con getFails
+        fails.setFont(customFont.deriveFont(35f));
+        fails.setForeground(Color.WHITE);
+        constraints.gridy++;
+        panel.add(fails, constraints);
+
+        JButton botonSalir = createbutton("Salir");
+        constraints.gridy++;
+        panel.add(botonSalir, constraints);
+        
+        botonSalir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuPanel.setVisible(true);
+                panel.setVisible(false);
+            }
+        });
+          
+        return panel;
+    
     }
     private JButton createbutton(String text){
         JButton button = new JButton(text);
@@ -571,5 +642,4 @@ public class Menu extends JFrame{
         });
         return button;
     }
-    
 }
