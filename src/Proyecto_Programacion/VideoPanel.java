@@ -13,7 +13,7 @@ import java.io.File;
 public class VideoPanel extends JPanel {
     private String rutaVideo;
     private JFXPanel fxPanel;
-    private MediaPlayer mediaPlayer;
+    public MediaPlayer mediaPlayer;
     private double volumen = 0.5; // Volumen inicial
 
     public VideoPanel() {
@@ -36,22 +36,22 @@ public class VideoPanel extends JPanel {
         mediaView.setPreserveRatio(true);
         mediaView.fitWidthProperty().bind(scene.widthProperty());
         mediaView.fitHeightProperty().bind(scene.heightProperty());
-
-        
-        mediaPlayer.play();
-        mediaPlayer.setVolume(volumen);
         mediaPlayer.setOnReady(new Runnable() {
             @Override
             public void run() {
-                // Notificar a cualquier listener que el video está listo
                 if (videoReadyListener != null) {
                     videoReadyListener.onReady();
                 }
             }
         });
+        
+        mediaPlayer.play();
+        mediaPlayer.setVolume(volumen);
+      
+
     }
     private VideoReadyListener videoReadyListener;
-
+    
     public interface VideoReadyListener {
         void onReady();
     }
@@ -73,7 +73,6 @@ public class VideoPanel extends JPanel {
     public void detenerReproduccion() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
-            mediaPlayer.dispose();
         }
     }
 
@@ -95,6 +94,10 @@ public class VideoPanel extends JPanel {
         if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
             mediaPlayer.pause();
         }
+    }
+    public boolean isSTOPPED(){
+        // Devuelve true si el video se está reproduciendo
+        return mediaPlayer.getStatus() == MediaPlayer.Status.STOPPED;
     }
     public boolean isRunning(){
         // Devuelve true si el video se está reproduciendo

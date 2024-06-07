@@ -16,7 +16,7 @@ public class Menu extends JFrame{
     // Usar JLayeredPane en lugar de JPanel
     public JLayeredPane layeredPane;
     public VideoPanel videoPanel;
-    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore;
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel;
     public JLabel puntaje,fails;
     public Menu(){
         // Crear la única ventana JFrame
@@ -51,6 +51,7 @@ public class Menu extends JFrame{
         this.menuPanel = createMenuPanel();
         this.configPanel = createConfigPanel();
         this.pausaPanel = pauseMenu();
+        this.jugarPanel = JugarMenu();
         this.configJuego = createConfigJuego();
         this.finalscore = createfinalscore();
         this.CancionesPanelgrabar = createCancionesPanel(false);
@@ -62,6 +63,7 @@ public class Menu extends JFrame{
         layeredPane.add(videoPanel, JLayeredPane.DEFAULT_LAYER); // Agrega el VideoPanel al JLayeredPane
         layeredPane.add(juego, JLayeredPane.MODAL_LAYER);
         layeredPane.add(menuPanel, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(jugarPanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(finalscore,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelgrabar,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelmenu,JLayeredPane.PALETTE_LAYER);
@@ -79,6 +81,7 @@ public class Menu extends JFrame{
         configJuego.setVisible(false);
         CancionesPanelgrabar.setVisible(false);
         CancionesPanelmenu.setVisible(false);
+        jugarPanel.setVisible(false);
         finalscore.setVisible(false);
         menuPanel.setVisible(true);
         // Mostrar la ventana
@@ -97,6 +100,7 @@ public class Menu extends JFrame{
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
          finalscore.setBounds(0,0,newSize.width,newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
+         jugarPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
          CancionesPanelgrabar.setBounds(0,0, newSize.width,newSize.height);
          CancionesPanelmenu.setBounds(0,0,newSize.width,newSize.height);
@@ -157,16 +161,8 @@ public class Menu extends JFrame{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                CancionesPanelmenu.setVisible(true);
-                CancionesPanelgrabar.setVisible(false);
-                panel.setVisible(false);
-                pausaPanel.setVisible(false);
-                configPanel.setVisible(false);
-                configJuego.setVisible(false);
-                
-         
-
+                jugarPanel.setVisible(true);
+                menuPanel.setVisible(false);
             }
         });
 
@@ -174,24 +170,16 @@ public class Menu extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 configPanel.setVisible(true);
-                configJuego.setVisible(false);
-                pausaPanel.setVisible(false);
-                CancionesPanelgrabar.setVisible(false);
-                CancionesPanelmenu.setVisible(false);
-                panel.setVisible(false);
-                
+                menuPanel.setVisible(false);
             }
         });
     
         button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
+                juego.setMultiplayer(false);
                 CancionesPanelgrabar.setVisible(true);
-                pausaPanel.setVisible(false);
-                configPanel.setVisible(false);
-                configJuego.setVisible(false);
-                panel.setVisible(false);
-                juego.setVisible(false);
+                menuPanel.setVisible(false);
             }
         });
         button3.addActionListener(new ActionListener() {
@@ -202,7 +190,77 @@ public class Menu extends JFrame{
         });
         return panel;
     }
-  
+    private JPanel JugarMenu(){
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondo.png"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        };
+        // Usa GridBagLayout
+        panel.setOpaque(false);
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        // Crear etiqueta de título
+        JLabel titulo = new JLabel("Jugar");
+        titulo.setFont(customFont.deriveFont(35f));
+        titulo.setForeground(Color.WHITE);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 100, 0); 
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo,constraints);
+        constraints.insets = new Insets(10, 0, 10, 0); 
+
+        JButton button1 = createbutton("1 Jugador");
+        constraints.gridy++;
+        panel.add(button1, constraints);
+
+        JButton button2 = createbutton("2 Jugadores");
+        constraints.gridy++;
+        panel.add(button2, constraints);
+
+        JButton button3 = createbutton("Online");
+        constraints.gridy++;
+        panel.add(button3, constraints);
+
+        JButton button4 = createbutton("Volver");
+        constraints.gridy++;
+        panel.add(button4, constraints);
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                juego.setMultiplayer(false);
+                jugarPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(true);
+            }   
+        });
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                juego.setMultiplayer(true);
+                jugarPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(true);
+            }   
+        });
+        button4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuPanel.setVisible(true);
+                jugarPanel.setVisible(false);
+            }
+        });
+        return panel;
+    }
     private JPanel pauseMenu() {
         JPanel panel = new JPanel(){
             @Override
@@ -250,7 +308,6 @@ public class Menu extends JFrame{
                 videoPanel.reanudarReproduccion();
                 juego.setVisible(true);
                 panel.setVisible(false);
-                configJuego.setVisible(false);
                 juego.setFocusable(true);
                 juego.requestFocusInWindow(); 
                 juego.repaint(); 
@@ -269,21 +326,15 @@ public class Menu extends JFrame{
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                menuPanel.setVisible(true);
-                CancionesPanelgrabar.setVisible(false);
-                CancionesPanelmenu.setVisible(false);
-                panel.setVisible(false);
-                juego.setVisible(false);
-                try {
                     if(juego.getGrabando()){
-                        juego.Salirdeljuego(true);
+                        juego.running = false;
+                        videoPanel.salirDelVideo();
+                    
                     }else{
-                        juego.Salirdeljuego(false);
+                        juego.running = false;
                         videoPanel.salirDelVideo();
                     }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+
                 juego.repaint();
             }
         });
@@ -497,7 +548,6 @@ public class Menu extends JFrame{
                         e1.printStackTrace();
                     }
                 } else{
-                    SwingUtilities.invokeLater(() -> {
                         try {
                             juego.setVisible(true);
                             juego.Iniciar(1);
@@ -506,7 +556,6 @@ public class Menu extends JFrame{
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
-                    });
                 }
 
             }
@@ -525,14 +574,13 @@ public class Menu extends JFrame{
                 if(!menu) {
                     try {
                         juego.setVisible(true);
-                        juego.IniciarGrabacion(1);
+                        juego.IniciarGrabacion(2);
                         juego.setFocusable(true);
                         juego.requestFocusInWindow();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
-                    SwingUtilities.invokeLater(() -> {
                         try {
                             juego.setVisible(true);
                             juego.Iniciar(2);
@@ -541,7 +589,6 @@ public class Menu extends JFrame{
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
-                    });
                 }
             }
         });
