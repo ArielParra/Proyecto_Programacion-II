@@ -1067,19 +1067,19 @@ public class Juego extends JPanel {
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
                 leerDatosTiemposiniciosfinales(1);
-                videoPanel.reproducir("audio/everlong.mp4");
+                videoPanel.reproducir("audio/cancion1.mp4");
                 this.canciongrab = 1;
                 break;
             case 2:
                 leerDatosCancion(cancion2, new File("cancion2.txt"));
                 leerDatosTiemposiniciosfinales(2);
-                videoPanel.reproducir("audio/one.mp4");
+                videoPanel.reproducir("audio/cancion2.mp4");
                 this.canciongrab = 2;
                 break;
             case 3:
                 leerDatosCancion(cancion3, new File("cancion3.txt"));
                 leerDatosTiemposiniciosfinales(3);
-                //reproducir("audio/cancion3.wav");
+                videoPanel.reproducir("audio/cancion3.mp4p");
                 this.canciongrab = 3;
                 break;
             default:break;
@@ -1117,19 +1117,19 @@ public class Juego extends JPanel {
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
                 leerDatosTiemposiniciosfinales(1);
-                videoPanel.reproducir("audio/everlong.mp4");
+                videoPanel.reproducir("audio/cancion1.mp4");
                 this.canciongrab = 1;
                 break;
             case 2:
                 leerDatosCancion(cancion2, new File("cancion2.txt"));
                 leerDatosTiemposiniciosfinales(2);
-                videoPanel.reproducir("audio/one.mp4");
+                videoPanel.reproducir("audio/cancion2.mp4");
                 this.canciongrab = 2;
                 break;
             case 3:
                 leerDatosCancion(cancion3, new File("cancion3.txt"));
                 leerDatosTiemposiniciosfinales(3);
-                videoPanel.reproducir("audio/cancion3.wav");
+                videoPanel.reproducir("audio/cancion3.mp4");
                 this.canciongrab = 3;
                 break;
             default:break;

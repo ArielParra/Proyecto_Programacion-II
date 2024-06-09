@@ -3,7 +3,6 @@ package Proyecto_Programacion;
 public class Ficha {
     float y;
     float x;
-    float ventantigua;
     double vy;
     int columna;
     public long tiempo;
@@ -29,7 +28,6 @@ public class Ficha {
     }
     public void FichaGrabacion(){
          this.y=juego.getHeight()-Juego.fichaheight;
-        this.ventantigua = juego.getHeight()-Juego.fichaheight;
         switch(columna){
             case 0:
                 this.x=juego.getWidth()/2 - (Juego.fichawidth * 2);
@@ -46,8 +44,7 @@ public class Ficha {
         }
     }
     public Ficha(long tiempo,int columna,Juego juego){
-        this.y=juego.getHeight()/2;
-        this.ventantigua = juego.getHeight() /2;
+        this.y=juego.getHeight() -  683;
         this.vy=300;
         this.columna=columna;
         this.juego=juego;
@@ -68,27 +65,25 @@ public class Ficha {
         }
     }
     public void Fichajugador1(){
-        this.y=juego.getHeight()/2;
-        this.ventantigua = juego.getHeight() /2;
+        this.y=juego.getHeight() - 683;
 
         switch(columna){
             case 0:
-                this.x=juego.getWidth()/3 - ( Juego.fichawidth * 3) + 70;
+                this.x=juego.getWidth()/2 - ( Juego.fichawidth * 4 + 80);
                 break;
             case 1:
-                this.x=juego.getWidth()/3 - (Juego.fichawidth * 2) + 70;
+                this.x=juego.getWidth()/2 - (Juego.fichawidth * 3 + 80);
                 break;
             case 2:
-                this.x=juego.getWidth()/3 - (Juego.fichawidth * 1) + 70;
+                this.x=juego.getWidth()/2 - (Juego.fichawidth * 2 + 80);
                 break;
             case 3:
-                this.x=juego.getWidth()/3 + 70;
+                this.x=juego.getWidth()/2 - (Juego.fichawidth * 1 + 80);
                 break;
         }
     }
     public void Fichajugador2(){
-        this.y=juego.getHeight()/2;
-        this.ventantigua = juego.getHeight() /2;
+        this.y=juego.getHeight() -683;
 
         switch(columna){
             case 0:

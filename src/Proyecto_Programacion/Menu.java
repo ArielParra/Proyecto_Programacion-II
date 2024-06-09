@@ -593,6 +593,38 @@ public class Menu extends JFrame{
                 }
             }
         });
+        cancion3.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                juego.setOpaque(false);
+                panel.setVisible(false);
+                pausaPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
+                configPanel.setVisible(false);
+                configJuego.setVisible(false);
+                if(!menu) {
+                    try {
+                        juego.setVisible(true);
+                        juego.IniciarGrabacion(3);
+                        juego.setFocusable(true);
+                        juego.requestFocusInWindow();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                } else{
+                        try {
+                            juego.setVisible(true);
+                            juego.Iniciar(3);
+                            juego.setFocusable(true);
+                            juego.requestFocusInWindow();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                }
+            }
+        });
         botonSalir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
