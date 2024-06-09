@@ -684,6 +684,11 @@ public class Menu extends JFrame{
 
         constraints.gridy++;
         panel.add(cancion3,constraints);
+
+        JButton cancion4 = createbutton("Franz Ferdinand - Take Me Out");
+
+        constraints.gridy++;
+        panel.add(cancion4,constraints);
         
         JButton botonSalir = createbutton("Salir");
         constraints.gridy++;
@@ -871,6 +876,66 @@ public class Menu extends JFrame{
                 }
             }
         }
+        });
+        cancion4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                juego.setOpaque(false);
+                panel.setVisible(false);
+                pausaPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
+                configPanel.setVisible(false);
+                configJuego.setVisible(false);
+                if(online){
+                    Thread serverThread = new Thread(new Runnable(){
+                        @Override
+                        public void run(){
+                            try {
+                                System.out.println("Esperando Jugador...");
+                                cancion = 4;
+                                panel.setVisible(false);
+                                EsperandoPanel.setVisible(true);
+                                ServerSocket serverSocket = new ServerSocket(5000);
+                                Socket clientSocket = serverSocket.accept();
+                               
+                                try {
+                                    juego.setVisible(true);
+                                    juego.Iniciar(4);
+                                    juego.setFocusable(true);
+                                    juego.requestFocusInWindow();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    serverThread.start();
+                }else{
+                if(!menu) {
+                    try {
+                        juego.setVisible(true);
+                        juego.IniciarGrabacion(4);
+                        juego.setFocusable(true);
+                        juego.requestFocusInWindow();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                } else{
+                        try {
+                            juego.setVisible(true);
+                            juego.Iniciar(4);
+                            juego.setFocusable(true);
+                            juego.requestFocusInWindow();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                }
+            }
+            }
         });
         botonSalir.addActionListener(new ActionListener() {
             @Override
