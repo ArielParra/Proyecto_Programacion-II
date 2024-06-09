@@ -237,6 +237,7 @@ public class Juego extends JPanel {
                         videoPanel.pausarReproduccion();
                         break;
                     case KeyEvent.VK_LEFT:
+                        if(grabando){
                         videoPanel.pausarReproduccion();
                         if (tiempotranscurrido >= 50_000_000L) {
                             tiempoInicial += 45_000_000L;
@@ -249,12 +250,14 @@ public class Juego extends JPanel {
                         } catch (InterruptedException b) {
                             b.printStackTrace();
                         }
+                        }
                         break;
                     case KeyEvent.VK_RIGHT: 
+                        if(grabando){    
                         videoPanel.pausarReproduccion();
                             tiempoInicial -= 45_000_000L;
                             System.out.println(tiempotranscurrido);
-                            
+                        }
                         break;
                    
                     default:
@@ -310,18 +313,14 @@ public class Juego extends JPanel {
                         verpress2 = false;
                         break;
                     case KeyEvent.VK_LEFT:
-                        if(grabando){
                         retroceder = false;
                         videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
                         videoPanel.reanudarReproduccion();
-                        }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if(grabando){
                         retroceder = false;
                         videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
                         videoPanel.reanudarReproduccion();
-                        }
                         break;
                         default:break;
                 }
