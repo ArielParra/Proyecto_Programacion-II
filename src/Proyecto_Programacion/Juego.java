@@ -310,14 +310,18 @@ public class Juego extends JPanel {
                         verpress2 = false;
                         break;
                     case KeyEvent.VK_LEFT:
+                        if(grabando){
                         retroceder = false;
                         videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
                         videoPanel.reanudarReproduccion();
+                        }
                         break;
                     case KeyEvent.VK_RIGHT:
+                        if(grabando){
                         retroceder = false;
                         videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
                         videoPanel.reanudarReproduccion();
+                        }
                         break;
                         default:break;
                 }
