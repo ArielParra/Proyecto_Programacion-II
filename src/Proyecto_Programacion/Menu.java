@@ -228,9 +228,9 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(button2, constraints);
 
-        JButton button3 = createbutton("Online");
+       /* JButton button3 = createbutton("Online");
         constraints.gridy++;
-        panel.add(button3, constraints);
+        panel.add(button3, constraints);*/
 
         JButton button4 = createbutton("Volver");
         constraints.gridy++;
@@ -371,16 +371,10 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
     
-        JSlider volumenSlider = new JSlider(0, 1, 0);
+        JSlider volumenSlider = new JSlider(0, 100, 50);
         volumenSlider.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
         panel.add(volumenSlider, constraints);
-    
-        JButton button4 = createbutton("Controles");
-        
-
-        constraints.gridy++;
-        panel.add(button4, constraints);
     
         JButton button3 = createbutton("Volver");
         
@@ -440,16 +434,10 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
     
-        JSlider volumenSlider = new JSlider(-50, 4, 0);
+        JSlider volumenSlider = new JSlider(0,100, 50);
         volumenSlider.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
         panel.add(volumenSlider, constraints);
-    
-        JButton button4 = createbutton("Controles");
-
-        constraints.gridy++;
-        panel.add(button4, constraints);
-    
 
         JButton button3 = createbutton("Volver al Menu");
         

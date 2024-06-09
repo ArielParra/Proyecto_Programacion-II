@@ -671,6 +671,7 @@ public class Juego extends JPanel {
         listaCancion = null;
         running = true;
         repaint();
+
         switch (canciongrab) {
             case 1:
                 listaCancion = cancion1;
@@ -867,8 +868,6 @@ public class Juego extends JPanel {
         int iteracion=0;
         int iteracion2=0;
         running = true;
-        setFocusable(true);
-        requestFocus();
         while (running) {
             
             try {
