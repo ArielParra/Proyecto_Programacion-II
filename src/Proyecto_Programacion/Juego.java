@@ -857,8 +857,8 @@ public class Juego extends JPanel {
         tiempoInicial = System.nanoTime();
         long tiempoViejo = System.nanoTime();
         grabando = true;
-        listaCancion = null;
-       
+        listaCancion = null;    
+        enPausa = false;
         long tiempoNuevo = System.nanoTime();
         long tiempoRelativo = System.nanoTime();
         long tiempoPausa = 0;
