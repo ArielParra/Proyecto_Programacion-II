@@ -364,7 +364,6 @@ public class Juego extends JPanel {
                 break;
         }
         while (running) {
-            setFocusable(true);
             if(videoPanel.mediaPlayer != null){
                 if(videoPanel.isSTOPPED() && !enPausa){
                     running = false;
@@ -373,6 +372,7 @@ public class Juego extends JPanel {
              }
             try {
                 if (!enPausa) {
+                    setFocusable(true);
                     Thread.sleep(5);
                     tiempoRelativo = System.nanoTime();
                     float dt = (tiempoRelativo - tiempoViejo) / 1_000_000_000f;
@@ -692,6 +692,7 @@ public class Juego extends JPanel {
              }
             try {
                 if (!enPausa) {
+                    setFocusable(true);
                     Thread.sleep(5);
                     tiempoRelativo = System.nanoTime();
                     float dt = (tiempoRelativo - tiempoViejo) / 1_000_000_000f;
@@ -872,6 +873,7 @@ public class Juego extends JPanel {
             
             try {
                 if(!enPausa){
+                    setFocusable(true);
                 Thread.sleep(5);
 
                 if(!retroceder){
@@ -1077,9 +1079,9 @@ public class Juego extends JPanel {
                 this.canciongrab = 2;
                 break;
             case 3:
-                leerDatosCancion(cancion3, new File("cancion3.txt"));
+                leerDatosCancion(cancion3, new File("can9cion3.txt"));
                 leerDatosTiemposiniciosfinales(3);
-                videoPanel.reproducir("audio/cancion3.mp4p");
+                videoPanel.reproducir("audio/cancion3.mp4");
                 this.canciongrab = 3;
                 break;
             default:break;

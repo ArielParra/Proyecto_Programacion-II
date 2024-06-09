@@ -371,7 +371,7 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
     
-        JSlider volumenSlider = new JSlider(-50, 4, 0);
+        JSlider volumenSlider = new JSlider(0, 1, 0);
         volumenSlider.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
         panel.add(volumenSlider, constraints);
