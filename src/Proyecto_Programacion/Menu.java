@@ -326,6 +326,7 @@ public class Menu extends JFrame{
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                panel.setVisible(false);
                     if(juego.getGrabando()){
                         juego.running = false;
                         videoPanel.salirDelVideo();
