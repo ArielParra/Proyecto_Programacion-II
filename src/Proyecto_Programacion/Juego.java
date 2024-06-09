@@ -42,6 +42,7 @@ public class Juego extends JPanel {
     private boolean veractiv,veractiv2 = false;
     private boolean multiplayer;
     public boolean running = true;
+    private boolean electrizadas = false;
 
 
     private BotonBase amarillo,amarillo2;
@@ -49,7 +50,6 @@ public class Juego extends JPanel {
     private BotonBase rojo,rojo2;
     private BotonBase verde,verde2;
 
-    private int cicloSleep;
     private int score,score2 = 0;
     private int combo,combo2 = 0;
     private int consecutivas,consecutivas2 = 0;
@@ -63,6 +63,8 @@ public class Juego extends JPanel {
     private long tiempotranscurrido;
 
     private List<Ficha> fichas = new ArrayList<>();
+    private List<Long> tiemposinicios= new ArrayList<>();
+    private List<Long> tiemposfinales= new ArrayList<>();
     private List<Ficha> fichas2 = new ArrayList<>();
     private List<LongIntPair> cancion1 = new ArrayList<>();
     private List<LongIntPair> cancion2 = new ArrayList<>();
@@ -90,6 +92,7 @@ public class Juego extends JPanel {
     private VideoPanel videoPanel;
     private Menu menu;
     private BufferedImage[] fichaimagenes = new BufferedImage[4];
+    private BufferedImage[] fichaelectrizada = new BufferedImage[4];
     private Font customFont,customFont2;
     public Juego(Menu menu) {
         this.menu = menu;
@@ -110,6 +113,10 @@ public class Juego extends JPanel {
             fichaimagenes[1] = ImageIO.read(new File("images/fichaazul.png"));
             fichaimagenes[2] = ImageIO.read(new File("images/ficharoja.png"));
             fichaimagenes[3] = ImageIO.read(new File("images/fichaverde.png"));
+            fichaelectrizada[0] = ImageIO.read(new File("images/electrizadaamarilla.png"));
+            fichaelectrizada[1] = ImageIO.read(new File("images/electrizadaazul.png"));
+            fichaelectrizada[2] = ImageIO.read(new File("images/electrizadaroja.png"));
+            fichaelectrizada[3] = ImageIO.read(new File("images/electrizadaverde.png"));
             amarillobase = ImageIO.read(new File("images/amarillobase.png"));
             azulbase = ImageIO.read(new File("images/azulbase.png"));
             rojobase = ImageIO.read(new File("images/rojobase.png"));
@@ -334,6 +341,8 @@ public class Juego extends JPanel {
         mensaje = "";
         combo = 1;
         combo2 = 1;
+        int iteracion=0;
+        int iteracion2=0;
         failsconsecutivas = 0;
         failsconsecutivas2 = 0;
         consecutivas = 0;
@@ -370,7 +379,19 @@ public class Juego extends JPanel {
                     tiempoViejo = tiempoRelativo;
                     tiempoViejoPausa = tiempoPausa;
                     tiempotranscurrido = tiempoRelativo - (tiempoInicial + tiempoPausa);
-    
+                    if(tiemposinicios.size()>iteracion){ 
+                    if(tiemposinicios.get(iteracion)<=tiempotranscurrido){
+                        electrizadas = true;
+                        iteracion++;
+                        System.out.println(iteracion);
+                    }
+                    }   
+                    if(tiemposfinales.size()>iteracion2){
+                    if(tiemposfinales.get(iteracion2)<=tiempotranscurrido){
+                        electrizadas = false;
+                        iteracion2++;
+                    }
+                    }
                     if (listaCancion != null) {
                         ListIterator<LongIntPair> iterator2 = listaCancion.listIterator();
                         while (iterator2.hasNext()) {
@@ -642,6 +663,8 @@ public class Juego extends JPanel {
         enPausa = false;
         mensaje = "";
         combo = 1;
+        int iteracion=0;
+        int iteracion2=0;
         failsconsecutivas = 0;
         consecutivas = 0;
         grabando = false;
@@ -675,7 +698,19 @@ public class Juego extends JPanel {
                     tiempoViejo = tiempoRelativo;
                     tiempoViejoPausa = tiempoPausa;
                     tiempotranscurrido = tiempoRelativo - (tiempoInicial + tiempoPausa);
-    
+
+                    if(tiemposinicios.size()>iteracion){ 
+                        if(tiemposinicios.get(iteracion)<=tiempotranscurrido){
+                            electrizadas = true;
+                            iteracion++;
+                        }
+                        }   
+                    if(tiemposfinales.size()>iteracion2){
+                        if(tiemposfinales.get(iteracion2)<=tiempotranscurrido){
+                            electrizadas = false;
+                            iteracion2++;
+                        }
+                    }
                     
                     if (listaCancion != null) {
                         ListIterator<LongIntPair> iterator2 = listaCancion.listIterator();
@@ -828,6 +863,8 @@ public class Juego extends JPanel {
         long tiempoViejoPausa = 0;
         long tiempoPausaNuevo = 0;
         long tiempoRetroceso = 0;
+        int iteracion=0;
+        int iteracion2=0;
         running = true;
         setFocusable(true);
         requestFocus();
@@ -848,7 +885,18 @@ public class Juego extends JPanel {
                 tiempoViejo = tiempoRelativo;
                 tiempoViejoPausa = tiempoPausa;
                 tiempotranscurrido = tiempoNuevo - (tiempoInicial + tiempoPausa);
-    
+                if(tiemposinicios.size()>iteracion){ 
+                    if(tiemposinicios.get(iteracion)<=tiempotranscurrido){
+                        electrizadas = true;
+                        iteracion++;
+                    }
+                    }   
+                if(tiemposfinales.size()>iteracion2){
+                    if(tiemposfinales.get(iteracion2)<=tiempotranscurrido){
+                        electrizadas = false;
+                        iteracion2++;
+                    }
+                }
                 switch (canciongrab) {
                     case 1:
                         listaCancion = cancion1;
@@ -870,8 +918,7 @@ public class Juego extends JPanel {
                         LongIntPair pair = iterator.next();
                         long first = pair.getFirst();
                         int second = pair.getSecond();
-                        // Condicion de creacion de ficha TEMPORAL
-                        // Se cambiara por la comprobacion de la ficha asociada con el pair (tiempo,columna)
+                    
                         if(retroceder){
                             if(tiempotranscurrido <= first && tiempotranscurrido >= first - 900_000_000L){
                                 if(pair.getDisponible()){
@@ -999,6 +1046,12 @@ public class Juego extends JPanel {
             case 'f':
                 cancion.add(new LongIntPair(tiempotranscurrido, 3));
                 break;
+            case 'z':
+                tiemposinicios.add(tiempotranscurrido);
+                break;
+            case 'x':
+                tiemposfinales.add(tiempotranscurrido);
+                break;
             default:
                 break;
         }
@@ -1013,16 +1066,19 @@ public class Juego extends JPanel {
         switch(cancion){
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
+                leerDatosTiemposiniciosfinales(1);
                 videoPanel.reproducir("audio/everlong.mp4");
                 this.canciongrab = 1;
                 break;
             case 2:
                 leerDatosCancion(cancion2, new File("cancion2.txt"));
+                leerDatosTiemposiniciosfinales(2);
                 videoPanel.reproducir("audio/one.mp4");
                 this.canciongrab = 2;
                 break;
             case 3:
                 leerDatosCancion(cancion3, new File("cancion3.txt"));
+                leerDatosTiemposiniciosfinales(3);
                 //reproducir("audio/cancion3.wav");
                 this.canciongrab = 3;
                 break;
@@ -1060,16 +1116,19 @@ public class Juego extends JPanel {
         switch(cancion){
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
+                leerDatosTiemposiniciosfinales(1);
                 videoPanel.reproducir("audio/everlong.mp4");
                 this.canciongrab = 1;
                 break;
             case 2:
                 leerDatosCancion(cancion2, new File("cancion2.txt"));
+                leerDatosTiemposiniciosfinales(2);
                 videoPanel.reproducir("audio/one.mp4");
                 this.canciongrab = 2;
                 break;
             case 3:
                 leerDatosCancion(cancion3, new File("cancion3.txt"));
+                leerDatosTiemposiniciosfinales(3);
                 videoPanel.reproducir("audio/cancion3.wav");
                 this.canciongrab = 3;
                 break;
@@ -1096,14 +1155,17 @@ public class Juego extends JPanel {
                 case 1:
                     cancion1 = listaCancion;
                     guardarDatosCancion(cancion1, new File("cancion1.txt"));
+                    guardarDatosTiemposiniciosfinales(1);
                     break;
                 case 2:
                     cancion2 = listaCancion;
                     guardarDatosCancion(cancion2, new File("cancion2.txt"));
+                    guardarDatosTiemposiniciosfinales(2);
                     break;
                 case 3:
                     cancion3 = listaCancion;
                     guardarDatosCancion(cancion3, new File("cancion3.txt"));
+                    guardarDatosTiemposiniciosfinales(3);
                     break;
                 default:
                     break;
@@ -1142,6 +1204,36 @@ public class Juego extends JPanel {
             }
         }
     }
+    }
+    private void leerDatosTiemposiniciosfinales(int archivo) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader("saved/"+ "tiemposinicios"+archivo+".txt"))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                long tiempo = Long.parseLong(linea);
+                tiemposinicios.add(tiempo);
+            }
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader("saved/"+ "tiemposfinales"+archivo+".txt"))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                long tiempo = Long.parseLong(linea);
+                tiemposfinales.add(tiempo);
+            }
+        }
+
+    }
+
+    private void guardarDatosTiemposiniciosfinales(int archivo) throws IOException {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("saved/"+ "tiemposinicios"+ archivo+".txt"))) {
+            for (long tiempo : tiemposinicios) {
+                writer.println(tiempo);
+            }
+        }
+        try (PrintWriter writer = new PrintWriter(new FileWriter("saved/"+ "tiemposfinales"+ archivo+".txt"))) {
+            for (long tiempo : tiemposfinales) {
+                writer.println(tiempo);
+            }
+        }
     }
     private void guardarDatosCancion(List<LongIntPair> cancion, File archivo) throws IOException {
         try (PrintWriter writer = new PrintWriter(new FileWriter("saved/"+ archivo))) {
@@ -1322,14 +1414,22 @@ public class Juego extends JPanel {
         }
         
         for (Ficha ficha : fichasCopia) {
+            if(electrizadas){
+                g.drawImage(fichaelectrizada[ficha.columna],(int)ficha.x,(int) ficha.y, 80, 50, null);
+            }else{
             g.drawImage(fichaimagenes[ficha.columna],(int)ficha.x,(int) ficha.y, 80, 50, null);
+            }
         }
         List<Ficha> fichasCopia2;
         synchronized (fichas2) {
             fichasCopia2 = new ArrayList<>(fichas2);
         }
         for(Ficha ficha : fichasCopia2){
+            if(electrizadas){
+                g.drawImage(fichaelectrizada[ficha.columna],(int)ficha.x,(int) ficha.y, 80, 50, null);
+            }else{
             g.drawImage(fichaimagenes[ficha.columna],(int)ficha.x,(int) ficha.y, 80, 50, null);
+            }
         }
     }
     private void dibujarmensaje(Graphics g,Color color, String mensaje, int x, int y){
