@@ -1345,14 +1345,14 @@ public class Juego extends JPanel {
         super.paintComponent(g);
         if(!grabando){
         if(multiplayer){
-            g.drawImage(scorebackground, getWidth()/9, (getHeight()/4)*3, 180,60, null);
-            dibujarStats(g, Integer.toString(score),  getWidth()/9 + 20, (getHeight()/4)*3+ 38);
+            g.drawImage(scorebackground, 80, (getHeight()/4)*3, 180,60, null);
+            dibujarStats(g, Integer.toString(score),  80 + 20, (getHeight()/4)*3+ 38);
     
             g.setColor(Color.WHITE);
             g.setFont(customFont2.deriveFont(20f));
-            g.drawString("x",  getWidth()/9+60, (getHeight()/4)*3 - 2);
+            g.drawString("x",  80+60, (getHeight()/4)*3 - 2);
             g.setFont(customFont2.deriveFont(45f));
-            g.drawString(Integer.toString(combo),  getWidth()/9 + 80, (getHeight()/4)*3 - 2);
+            g.drawString(Integer.toString(combo),  80 + 80, (getHeight()/4)*3 - 2);
 
             g.drawImage(scorebackground, (getWidth()/6)*5,(getHeight()/4)*3, 180,60, null);
             dibujarStats(g, Integer.toString(score2), (getWidth()/6)*5 +20,(getHeight()/4)*3+ 38);
