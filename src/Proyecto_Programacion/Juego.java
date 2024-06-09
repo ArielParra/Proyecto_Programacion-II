@@ -1079,7 +1079,7 @@ public class Juego extends JPanel {
                 this.canciongrab = 2;
                 break;
             case 3:
-                leerDatosCancion(cancion3, new File("can9cion3.txt"));
+                leerDatosCancion(cancion3, new File("cancion3.txt"));
                 leerDatosTiemposiniciosfinales(3);
                 videoPanel.reproducir("audio/cancion3.mp4");
                 this.canciongrab = 3;
