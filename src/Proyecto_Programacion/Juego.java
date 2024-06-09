@@ -1345,23 +1345,23 @@ public class Juego extends JPanel {
         super.paintComponent(g);
         if(!grabando){
         if(multiplayer){
-            g.drawImage(scorebackground, getWidth()/6, (getHeight()/4)*3, 180,60, null);
-            dibujarStats(g, Integer.toString(score),  getWidth()/6 + 20, (getHeight()/4)*3+ 38);
+            g.drawImage(scorebackground, getWidth()/8, (getHeight()/4)*3, 180,60, null);
+            dibujarStats(g, Integer.toString(score),  getWidth()/8 + 20, (getHeight()/4)*3+ 38);
     
             g.setColor(Color.WHITE);
             g.setFont(customFont2.deriveFont(20f));
-            g.drawString("x",  getWidth()/6+60, (getHeight()/4)*3 - 2);
+            g.drawString("x",  getWidth()/8+60, (getHeight()/4)*3 - 2);
             g.setFont(customFont2.deriveFont(45f));
-            g.drawString(Integer.toString(combo),  getWidth()/6 + 80, (getHeight()/4)*3 - 2);
+            g.drawString(Integer.toString(combo),  getWidth()/8 + 80, (getHeight()/4)*3 - 2);
 
-            g.drawImage(scorebackground, (getWidth()/4)*3,(getHeight()/4)*3, 180,60, null);
-            dibujarStats(g, Integer.toString(score2), (getWidth()/4)*3 +20,(getHeight()/4)*3+ 38);
+            g.drawImage(scorebackground, (getWidth()/6)*5,(getHeight()/4)*3, 180,60, null);
+            dibujarStats(g, Integer.toString(score2), (getWidth()/6)*5 +20,(getHeight()/4)*3+ 38);
 
             g.setColor(Color.WHITE);
             g.setFont(customFont2.deriveFont(20f));
-            g.drawString("x",(getWidth()/4)*3 + 60, (getHeight()/4)*3 -2);
+            g.drawString("x",(getWidth()/6)*5 + 60, (getHeight()/4)*3 -2);
             g.setFont(customFont2.deriveFont(45f));
-            g.drawString(Integer.toString(combo2), (getWidth()/4)*3 + 80, (getHeight()/4)*3 - 2);
+            g.drawString(Integer.toString(combo2), (getWidth()/6)*5 + 80, (getHeight()/4)*3 - 2);
 
 
         }else{
