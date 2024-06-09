@@ -868,6 +868,7 @@ public class Juego extends JPanel {
         int iteracion=0;
         int iteracion2=0;
         running = true;
+        repaint();
         while (running) {
             
             try {
