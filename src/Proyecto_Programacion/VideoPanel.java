@@ -36,28 +36,15 @@ public class VideoPanel extends JPanel {
         mediaView.setPreserveRatio(true);
         mediaView.fitWidthProperty().bind(scene.widthProperty());
         mediaView.fitHeightProperty().bind(scene.heightProperty());
-        mediaPlayer.setOnReady(new Runnable() {
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
-                if (videoReadyListener != null) {
-                    videoReadyListener.onReady();
-                }
+                mediaPlayer.stop();
             }
         });
-        
-        mediaPlayer.play();
         mediaPlayer.setVolume(volumen);
-      
+        mediaPlayer.play();
 
-    }
-    private VideoReadyListener videoReadyListener;
-    
-    public interface VideoReadyListener {
-        void onReady();
-    }
-
-    public void setOnVideoReadyListener(VideoReadyListener listener) {
-        this.videoReadyListener = listener;
     }
     public void setVolumen(double volumen) {
         this.volumen = volumen;
@@ -69,7 +56,13 @@ public class VideoPanel extends JPanel {
     public double getVolumen() {
         return volumen;
     }
-
+    public double getDuracion() {
+        if (mediaPlayer != null) {
+            return mediaPlayer.getTotalDuration().toSeconds();
+        }
+        return 0;
+    }
+ 
     public void detenerReproduccion() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();

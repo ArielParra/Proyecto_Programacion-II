@@ -44,7 +44,7 @@ public class Ficha {
         }
     }
     public Ficha(long tiempo,int columna,Juego juego){
-        this.y=juego.getHeight()/2;
+        this.y=juego.getHeight() - 384;
         this.vy=300;
         this.columna=columna;
         this.juego=juego;
@@ -65,7 +65,7 @@ public class Ficha {
         }
     }
     public void Fichajugador1(){
-        this.y=juego.getHeight()/2;
+        this.y=juego.getHeight() - 384;
 
         switch(columna){
             case 0:
@@ -83,7 +83,7 @@ public class Ficha {
         }
     }
     public void Fichajugador2(){
-        this.y=juego.getHeight()/2;
+        this.y=juego.getHeight()-384;
 
         switch(columna){
             case 0:

@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.io.File;
+import java.net.*;
 import java.io.IOException;
 import java.awt.event.*;
 
@@ -15,8 +16,9 @@ public class Menu extends JFrame{
     private Font customFont; 
     // Usar JLayeredPane en lugar de JPanel
     public JLayeredPane layeredPane;
+    public boolean online=false;
     public VideoPanel videoPanel;
-    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel;
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel;
     public JLabel puntaje,fails;
     public Menu(){
         // Crear la única ventana JFrame
@@ -53,6 +55,7 @@ public class Menu extends JFrame{
         this.pausaPanel = pauseMenu();
         this.jugarPanel = JugarMenu();
         this.configJuego = createConfigJuego();
+        this.OnlinePanel = createOnlinePanel();
         this.finalscore = createfinalscore();
         this.CancionesPanelgrabar = createCancionesPanel(false);
         this.CancionesPanelmenu = createCancionesPanel(true);
@@ -64,6 +67,7 @@ public class Menu extends JFrame{
         layeredPane.add(juego, JLayeredPane.MODAL_LAYER);
         layeredPane.add(menuPanel, JLayeredPane.PALETTE_LAYER);
         layeredPane.add(jugarPanel,JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(OnlinePanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(finalscore,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelgrabar,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelmenu,JLayeredPane.PALETTE_LAYER);
@@ -79,6 +83,7 @@ public class Menu extends JFrame{
         pausaPanel.setVisible(false);
         configPanel.setVisible(false);
         configJuego.setVisible(false);
+        OnlinePanel.setVisible(false);
         CancionesPanelgrabar.setVisible(false);
         CancionesPanelmenu.setVisible(false);
         jugarPanel.setVisible(false);
@@ -99,6 +104,7 @@ public class Menu extends JFrame{
         videoPanel.setBounds(0, 0, newSize.width, newSize.height);
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
          finalscore.setBounds(0,0,newSize.width,newSize.height);
+         OnlinePanel.setBounds(0,0,newSize.width,newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
          jugarPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
@@ -107,6 +113,131 @@ public class Menu extends JFrame{
          configJuego.setBounds(0, 0, newSize.width, newSize.height);
          juego.setBounds(0, 0, newSize.width, newSize.height);
           
+    }
+    private JPanel createEsperandoJugador(){
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondo.png"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        };
+        // Usa GridBagLayout
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        // Crear etiqueta de título
+        JLabel titulo = new JLabel("Esperando Jugador");
+        titulo.setFont(customFont.deriveFont(35f));
+        titulo.setForeground(Color.WHITE);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 100, 0); 
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo,constraints);
+        constraints.insets = new Insets(10, 0, 10, 0); 
+    
+        JButton button1 = createbutton("Volver");
+        constraints.gridy++;
+        panel.add(button1, constraints);
+    
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuPanel.setVisible(true);
+                jugarPanel.setVisible(false);
+            }
+        });
+        return panel;
+    }
+    private JPanel createOnlinePanel(){
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondo.png"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        };
+        // Usa GridBagLayout
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        // Crear etiqueta de título
+        JLabel titulo = new JLabel("Online");
+        titulo.setFont(customFont.deriveFont(35f));
+        titulo.setForeground(Color.WHITE);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(10, 0, 100, 0); 
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo,constraints);
+        constraints.insets = new Insets(10, 0, 10, 0); 
+
+        JButton button1 = createbutton("Crear Partida");
+        constraints.gridy++;
+        panel.add(button1, constraints);
+
+        JButton button2 = createbutton("Unirse a Partida");
+        constraints.gridy++;
+        panel.add(button2, constraints);
+
+        JButton button3 = createbutton("Volver");
+        constraints.gridy++;
+        panel.add(button3, constraints);
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                juego.setMultiplayer(true);
+                online = true;
+                jugarPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(true);
+            }   
+        });
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                juego.setMultiplayer(true);
+                online = true;
+                jugarPanel.setVisible(false);
+                Thread clientThread = new Thread(new Runnable(){
+                    @Override
+                    public void run(){
+                        try {
+                            System.out.println("Conectando a servidor...");
+                            Socket clientSocket = new Socket("localhost", 5000);
+                            juego.setVisible(true);
+                            juego.Iniciar(2);
+                            juego.setFocusable(true);
+                            juego.requestFocusInWindow();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }   
+        });
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuPanel.setVisible(true);
+                jugarPanel.setVisible(false);
+            }
+        });
+        return panel;
     }
     private JPanel createMenuPanel() {
         JPanel panel = new JPanel() {
@@ -252,6 +383,14 @@ public class Menu extends JFrame{
                 CancionesPanelmenu.setVisible(true);
             }   
         });
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jugarPanel.setVisible(false);
+                menuPanel.setVisible(false);
+                OnlinePanel.setVisible(true);
+            }
+        });
         button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -371,16 +510,10 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
     
-        JSlider volumenSlider = new JSlider(0, 1, 0);
+        JSlider volumenSlider = new JSlider(0, 100, 50);
         volumenSlider.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
         panel.add(volumenSlider, constraints);
-    
-        JButton button4 = createbutton("Controles");
-        
-
-        constraints.gridy++;
-        panel.add(button4, constraints);
     
         JButton button3 = createbutton("Volver");
         
@@ -440,16 +573,10 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
     
-        JSlider volumenSlider = new JSlider(-50, 4, 0);
+        JSlider volumenSlider = new JSlider(0,100, 50);
         volumenSlider.setPreferredSize(new Dimension(150, 50));
         constraints.gridy++;
         panel.add(volumenSlider, constraints);
-    
-        JButton button4 = createbutton("Controles");
-
-        constraints.gridy++;
-        panel.add(button4, constraints);
-    
 
         JButton button3 = createbutton("Volver al Menu");
         
@@ -572,6 +699,31 @@ public class Menu extends JFrame{
                 CancionesPanelgrabar.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
+                if(online){
+                    Thread serverThread = new Thread(new Runnable(){
+                        @Override
+                        public void run(){
+                            try {
+                                System.out.println("Esperando Jugador...");
+                                ServerSocket serverSocket = new ServerSocket(5000);
+                                Socket clientSocket = serverSocket.accept();
+                               
+                                try {
+                                    juego.setVisible(true);
+                                    juego.Iniciar(2);
+                                    juego.setFocusable(true);
+                                    juego.requestFocusInWindow();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    serverThread.start();
+                }else{
                 if(!menu) {
                     try {
                         juego.setVisible(true);
@@ -591,6 +743,7 @@ public class Menu extends JFrame{
                             e1.printStackTrace();
                         }
                 }
+               }
             }
         });
         cancion3.addActionListener(new ActionListener(){
@@ -675,7 +828,6 @@ public class Menu extends JFrame{
         fails.setForeground(Color.WHITE);
         constraints.gridy++;
         panel.add(fails, constraints);
-
         JButton botonSalir = createbutton("Salir");
         constraints.gridy++;
         panel.add(botonSalir, constraints);

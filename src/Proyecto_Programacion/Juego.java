@@ -61,6 +61,7 @@ public class Juego extends JPanel {
     public static final int fichawidth = 80;
     private long tiempoInicial;
     private long tiempotranscurrido;
+    private long tiempoRestante;
 
     private List<Ficha> fichas = new ArrayList<>();
     private List<Long> tiemposinicios= new ArrayList<>();
@@ -237,6 +238,7 @@ public class Juego extends JPanel {
                         videoPanel.pausarReproduccion();
                         break;
                     case KeyEvent.VK_LEFT:
+                        if(grabando){
                         videoPanel.pausarReproduccion();
                         if (tiempotranscurrido >= 50_000_000L) {
                             tiempoInicial += 45_000_000L;
@@ -249,12 +251,14 @@ public class Juego extends JPanel {
                         } catch (InterruptedException b) {
                             b.printStackTrace();
                         }
+                        }
                         break;
                     case KeyEvent.VK_RIGHT: 
+                        if(grabando){    
                         videoPanel.pausarReproduccion();
                             tiempoInicial -= 45_000_000L;
                             System.out.println(tiempotranscurrido);
-                            
+                        }
                         break;
                    
                     default:
@@ -310,14 +314,18 @@ public class Juego extends JPanel {
                         verpress2 = false;
                         break;
                     case KeyEvent.VK_LEFT:
+                        if(grabando){
                         retroceder = false;
                         videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
                         videoPanel.reanudarReproduccion();
+                        }
                         break;
                     case KeyEvent.VK_RIGHT:
+                        if(grabando){
                         retroceder = false;
                         videoPanel.setVideo((double)tiempotranscurrido / 1_000_000_000L);
                         videoPanel.reanudarReproduccion();
+                        }
                         break;
                         default:break;
                 }
@@ -365,6 +373,7 @@ public class Juego extends JPanel {
         }
         while (running) {
             if(videoPanel.mediaPlayer != null){
+
                 if(videoPanel.isSTOPPED() && !enPausa){
                     running = false;
                 }
@@ -398,7 +407,7 @@ public class Juego extends JPanel {
                         LongIntPair pair = iterator2.next();
                         long first = pair.getFirst();
                         int second = pair.getSecond();
-                        if (tiempotranscurrido >= first - 900_000_000L) {
+                        if (tiempotranscurrido >= first - 1_200_000_000L) {
                             crearFicha(first,second);
                             crearFicha2(first,second);
                             iterator2.remove(); 
@@ -650,7 +659,6 @@ public class Juego extends JPanel {
             e.printStackTrace();
         }
  }
-
     private void CicloPrincipalJuego() {
         long tiempoViejo = System.nanoTime();
         tiempoInicial = System.nanoTime(); 
@@ -686,10 +694,10 @@ public class Juego extends JPanel {
         }
         while (running) {
             if(videoPanel.mediaPlayer != null){
-            if(videoPanel.isSTOPPED() && !enPausa){
-                running = false;
+                if(videoPanel.isSTOPPED() && !enPausa){
+                    running = false;
+                }
             }
-             }
             try {
                 if (!enPausa) {
                     setFocusable(true);
@@ -699,7 +707,6 @@ public class Juego extends JPanel {
                     tiempoViejo = tiempoRelativo;
                     tiempoViejoPausa = tiempoPausa;
                     tiempotranscurrido = tiempoRelativo - (tiempoInicial + tiempoPausa);
-
                     if(tiemposinicios.size()>iteracion){ 
                         if(tiemposinicios.get(iteracion)<=tiempotranscurrido){
                             electrizadas = true;
@@ -719,7 +726,7 @@ public class Juego extends JPanel {
                         LongIntPair pair = iterator2.next();
                         long first = pair.getFirst();
                         int second = pair.getSecond();
-                        if (tiempotranscurrido >= first -  900_000_000L) {
+                        if (tiempotranscurrido >= first -  1_200_000_000L) {
                             crearFicha(first,second);
                             iterator2.remove(); 
                         }
@@ -856,8 +863,8 @@ public class Juego extends JPanel {
         tiempoInicial = System.nanoTime();
         long tiempoViejo = System.nanoTime();
         grabando = true;
-        listaCancion = null;
-       
+        listaCancion = null;    
+        enPausa = false;
         long tiempoNuevo = System.nanoTime();
         long tiempoRelativo = System.nanoTime();
         long tiempoPausa = 0;
@@ -867,10 +874,15 @@ public class Juego extends JPanel {
         int iteracion=0;
         int iteracion2=0;
         running = true;
-        setFocusable(true);
-        requestFocus();
+        repaint();
         while (running) {
-            
+            if(videoPanel.mediaPlayer != null){
+
+                if(videoPanel.isSTOPPED() && !enPausa){
+                    running = false;
+                }
+                
+             }
             try {
                 if(!enPausa){
                     setFocusable(true);
@@ -887,6 +899,7 @@ public class Juego extends JPanel {
                 tiempoViejo = tiempoRelativo;
                 tiempoViejoPausa = tiempoPausa;
                 tiempotranscurrido = tiempoNuevo - (tiempoInicial + tiempoPausa);
+                tiempoRestante = (long)videoPanel.getDuracion()- tiempotranscurrido;
                 if(tiemposinicios.size()>iteracion){ 
                     if(tiemposinicios.get(iteracion)<=tiempotranscurrido){
                         electrizadas = true;
@@ -922,7 +935,7 @@ public class Juego extends JPanel {
                         int second = pair.getSecond();
                     
                         if(retroceder){
-                            if(tiempotranscurrido <= first && tiempotranscurrido >= first - 900_000_000L){
+                            if(tiempotranscurrido <= first && tiempotranscurrido >= first - 1_200_000_000L){
                                 if(pair.getDisponible()){
                                     crearFichaAbajo(first,second);
                                     pair.setDisponible(false);
@@ -930,7 +943,7 @@ public class Juego extends JPanel {
                             }
                         
                         }else{
-                        if(tiempotranscurrido >= first - 900_000_000L && tiempotranscurrido <= first){
+                        if(tiempotranscurrido >= first - 1_200_000_000L && tiempotranscurrido <= first){
                                 if(pair.getDisponible()){
                                     crearFicha(first,second);
                                     pair.setDisponible(false);
@@ -1032,8 +1045,6 @@ public class Juego extends JPanel {
             e.printStackTrace();
         }
     }
-    
-  
     private void switchtecla(char tecla, List<LongIntPair> cancion){
         switch (Character.toLowerCase(tecla)) {
             case 'a':
@@ -1079,7 +1090,7 @@ public class Juego extends JPanel {
                 this.canciongrab = 2;
                 break;
             case 3:
-                leerDatosCancion(cancion3, new File("can9cion3.txt"));
+                leerDatosCancion(cancion3, new File("cancion3.txt"));
                 leerDatosTiemposiniciosfinales(3);
                 videoPanel.reproducir("audio/cancion3.mp4");
                 this.canciongrab = 3;
@@ -1181,17 +1192,20 @@ public class Juego extends JPanel {
         }catch(Exception e){
             e.printStackTrace();
         }
+
         if(!GuardarGrabacion){
-        videoPanel.setVisible(false);
-        setVisible(false);
-        menu.puntaje.setText("Puntaje: " + score);
-        menu.fails.setText("Fails: " + fails);
-        menu.finalscore.setVisible(true);
+            videoPanel.setVisible(false);
+            setVisible(false);
+            menu.puntaje.setText("Puntaje: " + score);
+            menu.fails.setText("Fails: " + fails);
+            menu.finalscore.setVisible(true);
         }else{
             videoPanel.setVisible(false);
             setVisible(false);
             menu.menuPanel.setVisible(true);
         }
+
+       
     }
     
     private void leerDatosCancion(List<LongIntPair> cancion, File archivo) throws IOException {
@@ -1340,8 +1354,6 @@ public class Juego extends JPanel {
         
         }
     }
-    
-    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -1409,6 +1421,10 @@ public class Juego extends JPanel {
             g.setColor(Color.WHITE);
             g.setFont(customFont2.deriveFont(20f));
             g.drawString("Tiempo: " + tiempotranscurrido/1_000_000_000, 270, 588);
+            //Dibujar TiempoRestante
+           /* g.setColor(Color.WHITE);
+            g.setFont(customFont2.deriveFont(20f));
+            g.drawString("Tiempo Restante: " + tiempoRestante / 1_000_000_000, 270, 610);*/
         }
         List<Ficha> fichasCopia;
         synchronized (fichas) {
@@ -1550,8 +1566,7 @@ public class Juego extends JPanel {
             }
         }
         return eliminado;
-    }
-    
+    }   
     private boolean TeclaSiendoPulsada(BotonBase color, boolean press){
         if(color.getPresionado()){
             return true;
