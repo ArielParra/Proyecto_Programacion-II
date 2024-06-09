@@ -1345,33 +1345,33 @@ public class Juego extends JPanel {
         super.paintComponent(g);
         if(!grabando){
         if(multiplayer){
-            g.drawImage(scorebackground, 80, 550, 180,60, null);
-            dibujarStats(g, Integer.toString(score), 100, 588);
+            g.drawImage(scorebackground, getWidth()/6, (getHeight()/4)*3, 180,60, null);
+            dibujarStats(g, Integer.toString(score),  getWidth()/6 + 20, (getHeight()/4)*3+ 38);
     
             g.setColor(Color.WHITE);
             g.setFont(customFont2.deriveFont(20f));
-            g.drawString("x", 130, 548);
+            g.drawString("x",  getWidth()/6+60, (getHeight()/4)*3 - 2);
             g.setFont(customFont2.deriveFont(45f));
-            g.drawString(Integer.toString(combo), 150, 548);
+            g.drawString(Integer.toString(combo),  getWidth()/6 + 80, (getHeight()/4)*3 - 2);
 
-            g.drawImage(scorebackground, 1110, 550, 180,60, null);
-            dibujarStats(g, Integer.toString(score2), 1130, 588);
+            g.drawImage(scorebackground, (getWidth()/4)*3,(getHeight()/4)*3, 180,60, null);
+            dibujarStats(g, Integer.toString(score2), (getWidth()/4)*3 +20,(getHeight()/4)*3+ 38);
 
             g.setColor(Color.WHITE);
             g.setFont(customFont2.deriveFont(20f));
-            g.drawString("x", 1160, 548);
+            g.drawString("x",(getWidth()/4)*3 + 60, (getHeight()/4)*3 -2);
             g.setFont(customFont2.deriveFont(45f));
-            g.drawString(Integer.toString(combo2), 1180, 548);
+            g.drawString(Integer.toString(combo2), (getWidth()/4)*3 + 80, (getHeight()/4)*3 - 2);
 
 
         }else{
-            g.drawImage(scorebackground, 250, 550, 180,60, null);
-            dibujarStats(g, Integer.toString(score), 270, 588);
+            g.drawImage(scorebackground,  getWidth()/4, (getHeight()/4)*3, 180,60, null);
+            dibujarStats(g, Integer.toString(score), getWidth()/4 + 20, (getHeight()/4)*3 + 38);
             g.setColor(Color.WHITE);
             g.setFont(customFont2.deriveFont(20f));
-            g.drawString("x", 300, 548);
+            g.drawString("x",  getWidth()/4 + 60, (getHeight()/4)*3 -2);
             g.setFont(customFont2.deriveFont(45f));
-            g.drawString(Integer.toString(combo), 330, 548);
+            g.drawString(Integer.toString(combo),  getWidth()/4 + 80,  (getHeight()/4)*3 -2);
         }
 
 
