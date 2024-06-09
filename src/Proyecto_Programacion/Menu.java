@@ -357,7 +357,7 @@ public class Menu extends JFrame{
         // Crear etiqueta de título
         JLabel titulo = new JLabel("Configuracion");
         titulo.setFont(customFont.deriveFont(35f));
-        titulo.setForeground(Color.BLACK);
+        titulo.setForeground(Color.WHITE);
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.insets = new Insets(10, 0, 100, 0); 
@@ -366,7 +366,7 @@ public class Menu extends JFrame{
         constraints.insets = new Insets(10, 0, 10, 0);  
 
         JLabel volumenLabel = new JLabel("Volumen");
-        volumenLabel.setForeground(Color.BLACK);
+        volumenLabel.setForeground(Color.WHITE);
         volumenLabel.setFont(new Font("Arial", Font.BOLD, 20));
         constraints.gridy++;
         panel.add(volumenLabel, constraints);
@@ -508,17 +508,17 @@ public class Menu extends JFrame{
         panel.add(titulo, constraints);
         constraints.insets = new Insets(10, 0, 10, 0); 
 
-        JButton cancion1 = createbutton("Everlong - Foo Fighters");
+        JButton cancion1 = createbutton("Kunfu Fighting - Carl Douglas");
         
         constraints.gridy++;
         panel.add(cancion1,constraints);
 
-        JButton cancion2 = createbutton("One - Metallica");
+        JButton cancion2 = createbutton("Losing My Religion - R.E.M.");
 
         constraints.gridy++;
         panel.add(cancion2,constraints);
         
-        JButton cancion3 = createbutton("Cancion 3");
+        JButton cancion3 = createbutton("System of a down - Toxicity");
 
         constraints.gridy++;
         panel.add(cancion3,constraints);
