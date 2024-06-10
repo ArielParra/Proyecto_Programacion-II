@@ -1104,15 +1104,18 @@ public class Juego extends JPanel {
                 break;
             default:break;
         }
+        menu.loadingPanel.setVisible(false);
 
         if(multiplayer){
             hiloJuego = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    
                     CicloPrincipalMultijugador();
                 }
             });  
+            setVisible(true);
+            setFocusable(true);
+            requestFocusInWindow();
             hiloJuego.start();
         }else{
             hiloJuego = new Thread(new Runnable(){
@@ -1121,6 +1124,9 @@ public class Juego extends JPanel {
                     CicloPrincipalJuego();
                 }
             });
+            setVisible(true);
+            setFocusable(true);
+            requestFocusInWindow();
             hiloJuego.start();
         }
         

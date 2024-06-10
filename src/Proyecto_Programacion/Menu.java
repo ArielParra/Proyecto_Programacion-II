@@ -18,7 +18,7 @@ public class Menu extends JFrame{
     public JLayeredPane layeredPane;
     public boolean online=false;
     public VideoPanel videoPanel;
-    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel,EsperandoPanel;
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel,EsperandoPanel,loadingPanel;
     public int cancion;
     public JLabel puntaje,fails;
     public Menu(){
@@ -55,6 +55,7 @@ public class Menu extends JFrame{
         this.configPanel = createConfigPanel();
         this.pausaPanel = pauseMenu();
         this.jugarPanel = JugarMenu();
+        this.loadingPanel = pantallaDeCarga();
         this.configJuego = createConfigJuego();
         this.EsperandoPanel = createEsperandoJugador();
         this.OnlinePanel = createOnlinePanel();
@@ -65,10 +66,11 @@ public class Menu extends JFrame{
 
 
         // Agregar paneles a JLayeredPane con niveles de capas
-        layeredPane.add(videoPanel, JLayeredPane.DEFAULT_LAYER); // Agrega el VideoPanel al JLayeredPane
+        layeredPane.add(videoPanel, JLayeredPane.DEFAULT_LAYER); 
         layeredPane.add(juego, JLayeredPane.MODAL_LAYER);
         layeredPane.add(menuPanel, JLayeredPane.PALETTE_LAYER);
         layeredPane.add(jugarPanel,JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(loadingPanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(OnlinePanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(EsperandoPanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(finalscore,JLayeredPane.PALETTE_LAYER);
@@ -87,6 +89,7 @@ public class Menu extends JFrame{
         configPanel.setVisible(false);
         configJuego.setVisible(false);
         OnlinePanel.setVisible(false);
+        loadingPanel.setVisible(false);
         EsperandoPanel.setVisible(false);
         CancionesPanelgrabar.setVisible(false);
         CancionesPanelmenu.setVisible(false);
@@ -110,7 +113,8 @@ public class Menu extends JFrame{
          finalscore.setBounds(0,0,newSize.width,newSize.height);
          OnlinePanel.setBounds(0,0,newSize.width,newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
-            EsperandoPanel.setBounds(0, 0, newSize.width, newSize.height);
+         loadingPanel.setBounds(0, 0, newSize.width, newSize.height);
+         EsperandoPanel.setBounds(0, 0, newSize.width, newSize.height);
          jugarPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
          CancionesPanelgrabar.setBounds(0,0, newSize.width,newSize.height);
@@ -272,6 +276,24 @@ public class Menu extends JFrame{
                 jugarPanel.setVisible(false);
             }
         });
+        return panel;
+    }
+    private JPanel pantallaDeCarga(){
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/loading.png"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        };
+      
         return panel;
     }
     private JPanel createMenuPanel() {
@@ -735,19 +757,16 @@ public class Menu extends JFrame{
                 }else{
                 if(!menu) {
                     try {
-                        juego.setVisible(true);
+                        loadingPanel.setVisible(true);
                         juego.IniciarGrabacion(1);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                         try {
-                            juego.setVisible(true);
+                            loadingPanel.setVisible(true);
                             juego.Iniciar(1);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
+           
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
@@ -779,10 +798,9 @@ public class Menu extends JFrame{
                                 Socket clientSocket = serverSocket.accept();
                                
                                 try {
-                                    juego.setVisible(true);
+                                    loadingPanel.setVisible(true);
                                     juego.Iniciar(2);
-                                    juego.setFocusable(true);
-                                    juego.requestFocusInWindow();
+                                    
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                 }
@@ -796,19 +814,15 @@ public class Menu extends JFrame{
                 }else{
                 if(!menu) {
                     try {
-                        juego.setVisible(true);
+                        loadingPanel.setVisible(true);
                         juego.IniciarGrabacion(2);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                         try {
-                            juego.setVisible(true);
+                            loadingPanel.setVisible(true);
                             juego.Iniciar(2);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
@@ -840,10 +854,8 @@ public class Menu extends JFrame{
                                 Socket clientSocket = serverSocket.accept();
                                
                                 try {
-                                    juego.setVisible(true);
+                                    loadingPanel.setVisible(true);
                                     juego.Iniciar(3);
-                                    juego.setFocusable(true);
-                                    juego.requestFocusInWindow();
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                 }
@@ -857,19 +869,16 @@ public class Menu extends JFrame{
                 }else{
                 if(!menu) {
                     try {
-                        juego.setVisible(true);
+                        loadingPanel.setVisible(true);
                         juego.IniciarGrabacion(3);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
+
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                         try {
-                            juego.setVisible(true);
+                            loadingPanel.setVisible(true);
                             juego.Iniciar(3);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
@@ -900,10 +909,9 @@ public class Menu extends JFrame{
                                 Socket clientSocket = serverSocket.accept();
                                
                                 try {
-                                    juego.setVisible(true);
+                                    loadingPanel.setVisible(true);
                                     juego.Iniciar(4);
-                                    juego.setFocusable(true);
-                                    juego.requestFocusInWindow();
+
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                 }
@@ -917,19 +925,16 @@ public class Menu extends JFrame{
                 }else{
                 if(!menu) {
                     try {
-                        juego.setVisible(true);
+                        loadingPanel.setVisible(true);
                         juego.IniciarGrabacion(4);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
+
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                         try {
-                            juego.setVisible(true);
+                            loadingPanel.setVisible(true);
                             juego.Iniciar(4);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
