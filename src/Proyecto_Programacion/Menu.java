@@ -239,7 +239,7 @@ public class Menu extends JFrame{
                             Socket clientSocket = new Socket("localhost", 5000);
                             try{
                                 loadingPanel.setVisible(true);
-                                juego.Iniciar(4);
+                                juego.Iniciar(cancion);
                             }catch(IOException e1){
                                 e1.printStackTrace();
                             }
