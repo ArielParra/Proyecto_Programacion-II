@@ -1175,12 +1175,17 @@ public class Juego extends JPanel {
         catch(Exception e){
             e.printStackTrace();
         }
-        
+        menu.loadingPanel.setVisible(false);
+        menu.EsperandoPanel.setVisible(false);
         hiloJuego = new Thread(new Runnable(){
             public void run(){
                 CicloEditar();
             }
+            
         });
+        setVisible(true);
+        setFocusable(true);
+        requestFocusInWindow();
         hiloJuego.start();
     }
     public void Salirdeljuego(boolean GuardarGrabacion) throws IOException {
