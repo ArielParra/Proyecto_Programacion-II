@@ -5,6 +5,9 @@ import javax.swing.*;
 
 
 import java.awt.*;
+import java.io.*;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.net.*;
 import java.io.IOException;
@@ -237,6 +240,9 @@ public class Menu extends JFrame{
                         try {
                             System.out.println("Conectando a servidor...");
                             Socket clientSocket = new Socket("localhost", 5000);
+                            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+                            cancion = in.readInt();
+
                             try{
                                 loadingPanel.setVisible(true);
                                 juego.Iniciar(cancion);
@@ -701,231 +707,25 @@ public class Menu extends JFrame{
         cancion1.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                juego.setOpaque(false);
-                panel.setVisible(false);
-                pausaPanel.setVisible(false);
-                CancionesPanelmenu.setVisible(false);
-                CancionesPanelgrabar.setVisible(false);
-                configPanel.setVisible(false);
-                configJuego.setVisible(false);
-                if(online){
-                    Thread serverThread = new Thread(new Runnable(){
-                        @Override
-                        public void run(){
-                            try {
-                                System.out.println("Esperando Jugador...");
-                                cancion = 1;
-                                panel.setVisible(false);
-                                EsperandoPanel.setVisible(true);
-                                ServerSocket serverSocket = new ServerSocket(5000);
-                                Socket clientSocket = serverSocket.accept();
-                                try{
-                                    Thread.sleep(100);
-                                }catch(InterruptedException e){
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    juego.setVisible(true);
-                                    juego.Iniciar(1);
-                                    juego.setFocusable(true);
-                                    juego.requestFocusInWindow();
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
-                                }
-                            
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    serverThread.start();
-                }else{
-                if(!menu) {
-                    try {
-                        loadingPanel.setVisible(true);
-                        juego.IniciarGrabacion(1);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                } else{
-                        try {
-                            loadingPanel.setVisible(true);
-                            juego.Iniciar(1);
-           
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                }
-            }
+                createCancion(panel, 1, menu);
             }
         });
         cancion2.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                juego.setOpaque(false);
-                panel.setVisible(false);
-                pausaPanel.setVisible(false);
-                CancionesPanelmenu.setVisible(false);
-                CancionesPanelgrabar.setVisible(false);
-                configPanel.setVisible(false);
-                configJuego.setVisible(false);
-                if(online){
-                    Thread serverThread = new Thread(new Runnable(){
-                        @Override
-                        public void run(){
-                            try {
-                                System.out.println("Esperando Jugador...");
-                                cancion = 2;
-                                panel.setVisible(false);
-                                EsperandoPanel.setVisible(true);
-                                ServerSocket serverSocket = new ServerSocket(5000);
-                                Socket clientSocket = serverSocket.accept();
-                               
-                                try {
-                                    loadingPanel.setVisible(true);
-                                    juego.Iniciar(2);
-                                    
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
-                                }
-                            
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    serverThread.start();
-                }else{
-                if(!menu) {
-                    try {
-                        loadingPanel.setVisible(true);
-                        juego.IniciarGrabacion(2);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                } else{
-                        try {
-                            loadingPanel.setVisible(true);
-                            juego.Iniciar(2);
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                }
-               }
+                createCancion(panel, 2, menu);
             }
         });
         cancion3.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                juego.setOpaque(false);
-                panel.setVisible(false);
-                pausaPanel.setVisible(false);
-                CancionesPanelmenu.setVisible(false);
-                CancionesPanelgrabar.setVisible(false);
-                configPanel.setVisible(false);
-                configJuego.setVisible(false);
-                if(online){
-                    Thread serverThread = new Thread(new Runnable(){
-                        @Override
-                        public void run(){
-                            try {
-                                System.out.println("Esperando Jugador...");
-                                cancion = 3;
-                                panel.setVisible(false);
-                                EsperandoPanel.setVisible(true);
-                                ServerSocket serverSocket = new ServerSocket(5000);
-                                Socket clientSocket = serverSocket.accept();
-                               
-                                try {
-                                    loadingPanel.setVisible(true);
-                                    juego.Iniciar(3);
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
-                                }
-                            
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    serverThread.start();
-                }else{
-                if(!menu) {
-                    try {
-                        loadingPanel.setVisible(true);
-                        juego.IniciarGrabacion(3);
-
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                } else{
-                        try {
-                            loadingPanel.setVisible(true);
-                            juego.Iniciar(3);
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                }
+                createCancion(panel, 3, menu);
             }
-        }
         });
         cancion4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                juego.setOpaque(false);
-                panel.setVisible(false);
-                pausaPanel.setVisible(false);
-                CancionesPanelmenu.setVisible(false);
-                CancionesPanelgrabar.setVisible(false);
-                configPanel.setVisible(false);
-                configJuego.setVisible(false);
-                if(online){
-                    Thread serverThread = new Thread(new Runnable(){
-                        @Override
-                        public void run(){
-                            try {
-                                System.out.println("Esperando Jugador...");
-                                cancion = 4;
-                                panel.setVisible(false);
-                                EsperandoPanel.setVisible(true);
-                                ServerSocket serverSocket = new ServerSocket(5000);
-                                Socket clientSocket = serverSocket.accept();
-                               
-                                try {
-                                    loadingPanel.setVisible(true);
-                                    juego.Iniciar(4);
-
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
-                                }
-                            
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    serverThread.start();
-                }else{
-                if(!menu) {
-                    try {
-                        loadingPanel.setVisible(true);
-                        juego.IniciarGrabacion(4);
-
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                } else{
-                        try {
-                            loadingPanel.setVisible(true);
-                            juego.Iniciar(4);
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                }
-            }
+                createCancion(panel, 4, menu);
             }
         });
         botonSalir.addActionListener(new ActionListener() {
@@ -993,6 +793,62 @@ public class Menu extends JFrame{
         return panel;
     
     }
+    private void createCancion(JPanel panel, int cancionglobal, boolean menu){
+        juego.setOpaque(false);
+                panel.setVisible(false);
+                pausaPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
+                configPanel.setVisible(false);
+                configJuego.setVisible(false);
+                if(online){
+                    Thread serverThread = new Thread(new Runnable(){
+                        @Override
+                        public void run(){
+                            try {
+                                System.out.println("Esperando Jugador...");
+                                cancion = cancionglobal;
+                                panel.setVisible(false);
+                                EsperandoPanel.setVisible(true);
+                                ServerSocket serverSocket = new ServerSocket(5000);
+                                Socket clientSocket = serverSocket.accept();
+                                DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+                                out.writeInt(cancionglobal);
+                                out.flush();
+                                try {
+                                    loadingPanel.setVisible(true);
+                                    juego.Iniciar(cancionglobal);
+
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    serverThread.start();
+                }else{
+                if(!menu) {
+                    try {
+                        loadingPanel.setVisible(true);
+                        juego.IniciarGrabacion(cancionglobal);
+
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                } else{
+                        try {
+                            loadingPanel.setVisible(true);
+                            juego.Iniciar(cancionglobal);
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                }
+            }
+    }
+    
     private JButton createbutton(String text){
         JButton button = new JButton(text);
         button.setForeground(Color.WHITE);

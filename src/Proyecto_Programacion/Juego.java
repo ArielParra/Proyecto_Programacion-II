@@ -369,6 +369,9 @@ public class Juego extends JPanel {
             case 3:
                 listaCancion = cancion3;
                 break;
+            case 4:
+                listaCancion = cancion4;
+                break;
             default:
                 break;
         }
@@ -690,6 +693,9 @@ public class Juego extends JPanel {
             case 3:
                 listaCancion = cancion3;
                 break;
+            case 4:
+                listaCancion = cancion4;
+                break;
             default:
                 break;
         }
@@ -922,6 +928,9 @@ public class Juego extends JPanel {
                         break;
                     case 3:
                         listaCancion = cancion3;
+                        break;
+                    case 4:
+                        listaCancion = cancion4;
                         break;
                     default:
                         break;
