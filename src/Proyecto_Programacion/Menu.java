@@ -262,6 +262,7 @@ public class Menu extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 menuPanel.setVisible(true);
                 jugarPanel.setVisible(false);
+                panel.setVisible(false);
                 online = false;
             }
         });
