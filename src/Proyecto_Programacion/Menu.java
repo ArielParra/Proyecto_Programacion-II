@@ -262,6 +262,7 @@ public class Menu extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 menuPanel.setVisible(true);
                 jugarPanel.setVisible(false);
+                online = false;
             }
         });
         return panel;
@@ -848,7 +849,7 @@ public class Menu extends JFrame{
                 }
             }
     }
-    
+  
     private JButton createbutton(String text){
         JButton button = new JButton(text);
         button.setForeground(Color.WHITE);
