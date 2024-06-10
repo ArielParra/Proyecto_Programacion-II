@@ -217,53 +217,35 @@ public class Menu extends JFrame{
             }   
         });
         button2.addActionListener(new ActionListener() {
+            
             @Override
             public void actionPerformed(ActionEvent e) {
+                juego.setOpaque(false);
+                panel.setVisible(false);
+                pausaPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
+                configPanel.setVisible(false);
+                configJuego.setVisible(false);
                 juego.setMultiplayer(true);
                 online = true;
                 jugarPanel.setVisible(false);
+                panel.setVisible(false);
                 Thread clientThread = new Thread(new Runnable(){
-                    @Override
+                   @Override
                     public void run(){
-                        switch(cancion){
-                            case 1:
-                            try {
-                                System.out.println("Conectando a servidor...");
-                                Socket clientSocket = new Socket("localhost", 5000);
-                                juego.setVisible(true);
-                                juego.Iniciar(1);
-                                juego.setFocusable(true);
-                                juego.requestFocusInWindow();
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                        try {
+                            System.out.println("Conectando a servidor...");
+                            Socket clientSocket = new Socket("localhost", 5000);
+                            try{
+                                loadingPanel.setVisible(true);
+                                juego.Iniciar(4);
+                            }catch(IOException e1){
+                                e1.printStackTrace();
                             }
-                                break;
-                            case 2:
-                            try {
-                                System.out.println("Conectando a servidor...");
-                                Socket clientSocket = new Socket("localhost", 5000);
-                                juego.setVisible(true);
-                                juego.Iniciar(2);
-                                juego.setFocusable(true);
-                                juego.requestFocusInWindow();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }                                
-                            break;
-                            case 3:
-                            try {
-                                System.out.println("Conectando a servidor...");
-                                Socket clientSocket = new Socket("localhost", 5000);
-                                juego.setVisible(true);
-                                juego.Iniciar(3);
-                                juego.setFocusable(true);
-                                juego.requestFocusInWindow();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }                                
-                            break;
+                        } catch (IOException e2) {
+                            e2.printStackTrace();
                         }
-                        
                     }
                 });
                 clientThread.start();
@@ -738,7 +720,11 @@ public class Menu extends JFrame{
                                 EsperandoPanel.setVisible(true);
                                 ServerSocket serverSocket = new ServerSocket(5000);
                                 Socket clientSocket = serverSocket.accept();
-                                
+                                try{
+                                    Thread.sleep(100);
+                                }catch(InterruptedException e){
+                                    e.printStackTrace();
+                                }
                                 try {
                                     juego.setVisible(true);
                                     juego.Iniciar(1);

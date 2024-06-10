@@ -1077,6 +1077,7 @@ public class Juego extends JPanel {
         repaint();
         videoPanel.setVisible(true);
         videoPanel.setOpaque(false);
+        try{
         switch(cancion){
             case 1:
                 leerDatosCancion(cancion1,new File("cancion1.txt"));
@@ -1104,7 +1105,11 @@ public class Juego extends JPanel {
                 break;
             default:break;
         }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         menu.loadingPanel.setVisible(false);
+        menu.EsperandoPanel.setVisible(false);
 
         if(multiplayer){
             hiloJuego = new Thread(new Runnable() {
@@ -1131,6 +1136,7 @@ public class Juego extends JPanel {
         }
         
     }
+    
     public void IniciarGrabacion(int cancion) throws IOException{
         removeAll();
         pintarbase();
