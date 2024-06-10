@@ -17,7 +17,15 @@
             "c:\\Users\\manuel\\Downloads\\openjfx-22.0.1_windows-x64_bin-sdk\\javafx-sdk-22.0.1\\lib\\javafx.media.jar",
             "c:\\Users\\manuel\\Downloads\\openjfx-22.0.1_windows-x64_bin-sdk\\javafx-sdk-22.0.1\\lib\\javafx.swing.jar",
             "c:\\Users\\manuel\\Downloads\\openjfx-22.0.1_windows-x64_bin-sdk\\javafx-sdk-22.0.1\\lib\\javafx.web.jar",
-            "c:\\Users\\manuel\\Downloads\\openjfx-22.0.1_windows-x64_bin-sdk\\javafx-sdk-22.0.1\\lib\\javafx-swt.jar"
+            "c:\\Users\\manuel\\Downloads\\openjfx-22.0.1_windows-x64_bin-sdk\\javafx-sdk-22.0.1\\lib\\javafx-swt.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.base.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.controls.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.fxml.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.graphics.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.media.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.swing.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx.web.jar",
+            "c:\\Users\\ravary\\Downloads\\javafx-sdk-22.0.1\\lib\\javafx-swt.jar"
         ],
         "exclude": [
             "lib/javafx-swt.jar"

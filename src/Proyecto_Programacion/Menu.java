@@ -670,7 +670,7 @@ public class Menu extends JFrame{
         panel.add(titulo, constraints);
         constraints.insets = new Insets(10, 0, 10, 0); 
 
-        JButton cancion1 = createbutton("Kunfu Fighting - Carl Douglas");
+        JButton cancion1 = createbutton("Fung Fu Fighting - Carl Douglas");
         
         constraints.gridy++;
         panel.add(cancion1,constraints);
@@ -680,12 +680,12 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(cancion2,constraints);
         
-        JButton cancion3 = createbutton("System of a down - Toxicity");
+        JButton cancion3 = createbutton("Toxicity - System of a down");
 
         constraints.gridy++;
         panel.add(cancion3,constraints);
 
-        JButton cancion4 = createbutton("Franz Ferdinand - Take Me Out");
+        JButton cancion4 = createbutton("Take Me Out - Franz Ferdinand");
 
         constraints.gridy++;
         panel.add(cancion4,constraints);
