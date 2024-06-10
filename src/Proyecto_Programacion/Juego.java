@@ -70,6 +70,7 @@ public class Juego extends JPanel {
     private List<LongIntPair> cancion1 = new ArrayList<>();
     private List<LongIntPair> cancion2 = new ArrayList<>();
     private List<LongIntPair> cancion3 = new ArrayList<>();
+    private List<LongIntPair> cancion4 = new ArrayList<>();
     private List<LongIntPair> listaCancion = new ArrayList<>();
     private List<Ficha> fichasParaEliminar = new ArrayList<>();
 
@@ -1095,17 +1096,26 @@ public class Juego extends JPanel {
                 videoPanel.reproducir("audio/cancion3.mp4");
                 this.canciongrab = 3;
                 break;
+            case 4:
+                leerDatosCancion(cancion4, new File("cancion4.txt"));
+                leerDatosTiemposiniciosfinales(4);
+                videoPanel.reproducir("audio/cancion4.mp4");
+                this.canciongrab = 4;
+                break;
             default:break;
         }
+        menu.loadingPanel.setVisible(false);
 
         if(multiplayer){
             hiloJuego = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    
                     CicloPrincipalMultijugador();
                 }
             });  
+            setVisible(true);
+            setFocusable(true);
+            requestFocusInWindow();
             hiloJuego.start();
         }else{
             hiloJuego = new Thread(new Runnable(){
@@ -1114,6 +1124,9 @@ public class Juego extends JPanel {
                     CicloPrincipalJuego();
                 }
             });
+            setVisible(true);
+            setFocusable(true);
+            requestFocusInWindow();
             hiloJuego.start();
         }
         
@@ -1144,6 +1157,12 @@ public class Juego extends JPanel {
                 leerDatosTiemposiniciosfinales(3);
                 videoPanel.reproducir("audio/cancion3.mp4");
                 this.canciongrab = 3;
+                break;
+            case 4:
+                leerDatosCancion(cancion4, new File("cancion4.txt"));
+                leerDatosTiemposiniciosfinales(4);
+                videoPanel.reproducir("audio/cancion4.mp4");
+                this.canciongrab = 4;
                 break;
             default:break;
         }}
@@ -1179,6 +1198,11 @@ public class Juego extends JPanel {
                     cancion3 = listaCancion;
                     guardarDatosCancion(cancion3, new File("cancion3.txt"));
                     guardarDatosTiemposiniciosfinales(3);
+                    break;
+                case 4:
+                    cancion4 = listaCancion;
+                    guardarDatosCancion(cancion4, new File("cancion4.txt"));
+                    guardarDatosTiemposiniciosfinales(4);
                     break;
                 default:
                     break;

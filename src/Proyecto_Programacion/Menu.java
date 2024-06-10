@@ -18,7 +18,8 @@ public class Menu extends JFrame{
     public JLayeredPane layeredPane;
     public boolean online=false;
     public VideoPanel videoPanel;
-    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel;
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel,EsperandoPanel,loadingPanel;
+    public int cancion;
     public JLabel puntaje,fails;
     public Menu(){
         // Crear la única ventana JFrame
@@ -54,7 +55,9 @@ public class Menu extends JFrame{
         this.configPanel = createConfigPanel();
         this.pausaPanel = pauseMenu();
         this.jugarPanel = JugarMenu();
+        this.loadingPanel = pantallaDeCarga();
         this.configJuego = createConfigJuego();
+        this.EsperandoPanel = createEsperandoJugador();
         this.OnlinePanel = createOnlinePanel();
         this.finalscore = createfinalscore();
         this.CancionesPanelgrabar = createCancionesPanel(false);
@@ -63,11 +66,13 @@ public class Menu extends JFrame{
 
 
         // Agregar paneles a JLayeredPane con niveles de capas
-        layeredPane.add(videoPanel, JLayeredPane.DEFAULT_LAYER); // Agrega el VideoPanel al JLayeredPane
+        layeredPane.add(videoPanel, JLayeredPane.DEFAULT_LAYER); 
         layeredPane.add(juego, JLayeredPane.MODAL_LAYER);
         layeredPane.add(menuPanel, JLayeredPane.PALETTE_LAYER);
         layeredPane.add(jugarPanel,JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(loadingPanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(OnlinePanel,JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(EsperandoPanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(finalscore,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelgrabar,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelmenu,JLayeredPane.PALETTE_LAYER);
@@ -84,6 +89,8 @@ public class Menu extends JFrame{
         configPanel.setVisible(false);
         configJuego.setVisible(false);
         OnlinePanel.setVisible(false);
+        loadingPanel.setVisible(false);
+        EsperandoPanel.setVisible(false);
         CancionesPanelgrabar.setVisible(false);
         CancionesPanelmenu.setVisible(false);
         jugarPanel.setVisible(false);
@@ -106,6 +113,8 @@ public class Menu extends JFrame{
          finalscore.setBounds(0,0,newSize.width,newSize.height);
          OnlinePanel.setBounds(0,0,newSize.width,newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
+         loadingPanel.setBounds(0, 0, newSize.width, newSize.height);
+         EsperandoPanel.setBounds(0, 0, newSize.width, newSize.height);
          jugarPanel.setBounds(0, 0, newSize.width, newSize.height);
          configPanel.setBounds(0, 0, newSize.width, newSize.height);
          CancionesPanelgrabar.setBounds(0,0, newSize.width,newSize.height);
@@ -201,6 +210,7 @@ public class Menu extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 juego.setMultiplayer(true);
+                panel.setVisible(false);
                 online = true;
                 jugarPanel.setVisible(false);
                 CancionesPanelmenu.setVisible(true);
@@ -215,19 +225,48 @@ public class Menu extends JFrame{
                 Thread clientThread = new Thread(new Runnable(){
                     @Override
                     public void run(){
-                        try {
-                            System.out.println("Conectando a servidor...");
-                            Socket clientSocket = new Socket("localhost", 5000);
-                            juego.setVisible(true);
-                            juego.Iniciar(2);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        switch(cancion){
+                            case 1:
+                            try {
+                                System.out.println("Conectando a servidor...");
+                                Socket clientSocket = new Socket("localhost", 5000);
+                                juego.setVisible(true);
+                                juego.Iniciar(1);
+                                juego.setFocusable(true);
+                                juego.requestFocusInWindow();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                                break;
+                            case 2:
+                            try {
+                                System.out.println("Conectando a servidor...");
+                                Socket clientSocket = new Socket("localhost", 5000);
+                                juego.setVisible(true);
+                                juego.Iniciar(2);
+                                juego.setFocusable(true);
+                                juego.requestFocusInWindow();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }                                
+                            break;
+                            case 3:
+                            try {
+                                System.out.println("Conectando a servidor...");
+                                Socket clientSocket = new Socket("localhost", 5000);
+                                juego.setVisible(true);
+                                juego.Iniciar(3);
+                                juego.setFocusable(true);
+                                juego.requestFocusInWindow();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }                                
+                            break;
                         }
+                        
                     }
                 });
-
+                clientThread.start();
             }   
         });
         button3.addActionListener(new ActionListener() {
@@ -237,6 +276,24 @@ public class Menu extends JFrame{
                 jugarPanel.setVisible(false);
             }
         });
+        return panel;
+    }
+    private JPanel pantallaDeCarga(){
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/loading.png"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        };
+      
         return panel;
     }
     private JPanel createMenuPanel() {
@@ -635,7 +692,7 @@ public class Menu extends JFrame{
         panel.add(titulo, constraints);
         constraints.insets = new Insets(10, 0, 10, 0); 
 
-        JButton cancion1 = createbutton("Kunfu Fighting - Carl Douglas");
+        JButton cancion1 = createbutton("Fung Fu Fighting - Carl Douglas");
         
         constraints.gridy++;
         panel.add(cancion1,constraints);
@@ -645,10 +702,15 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(cancion2,constraints);
         
-        JButton cancion3 = createbutton("System of a down - Toxicity");
+        JButton cancion3 = createbutton("Toxicity - System of a down");
 
         constraints.gridy++;
         panel.add(cancion3,constraints);
+
+        JButton cancion4 = createbutton("Take Me Out - Franz Ferdinand");
+
+        constraints.gridy++;
+        panel.add(cancion4,constraints);
         
         JButton botonSalir = createbutton("Salir");
         constraints.gridy++;
@@ -665,27 +727,51 @@ public class Menu extends JFrame{
                 CancionesPanelgrabar.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
-                
+                if(online){
+                    Thread serverThread = new Thread(new Runnable(){
+                        @Override
+                        public void run(){
+                            try {
+                                System.out.println("Esperando Jugador...");
+                                cancion = 1;
+                                panel.setVisible(false);
+                                EsperandoPanel.setVisible(true);
+                                ServerSocket serverSocket = new ServerSocket(5000);
+                                Socket clientSocket = serverSocket.accept();
+                                
+                                try {
+                                    juego.setVisible(true);
+                                    juego.Iniciar(1);
+                                    juego.setFocusable(true);
+                                    juego.requestFocusInWindow();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    serverThread.start();
+                }else{
                 if(!menu) {
                     try {
-                        juego.setVisible(true);
+                        loadingPanel.setVisible(true);
                         juego.IniciarGrabacion(1);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                         try {
-                            juego.setVisible(true);
+                            loadingPanel.setVisible(true);
                             juego.Iniciar(1);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
+           
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
                 }
-
+            }
             }
         });
         cancion2.addActionListener(new ActionListener(){
@@ -705,14 +791,16 @@ public class Menu extends JFrame{
                         public void run(){
                             try {
                                 System.out.println("Esperando Jugador...");
+                                cancion = 2;
+                                panel.setVisible(false);
+                                EsperandoPanel.setVisible(true);
                                 ServerSocket serverSocket = new ServerSocket(5000);
                                 Socket clientSocket = serverSocket.accept();
                                
                                 try {
-                                    juego.setVisible(true);
+                                    loadingPanel.setVisible(true);
                                     juego.Iniciar(2);
-                                    juego.setFocusable(true);
-                                    juego.requestFocusInWindow();
+                                    
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                 }
@@ -726,19 +814,15 @@ public class Menu extends JFrame{
                 }else{
                 if(!menu) {
                     try {
-                        juego.setVisible(true);
+                        loadingPanel.setVisible(true);
                         juego.IniciarGrabacion(2);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                         try {
-                            juego.setVisible(true);
+                            loadingPanel.setVisible(true);
                             juego.Iniciar(2);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
@@ -757,25 +841,105 @@ public class Menu extends JFrame{
                 CancionesPanelgrabar.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
+                if(online){
+                    Thread serverThread = new Thread(new Runnable(){
+                        @Override
+                        public void run(){
+                            try {
+                                System.out.println("Esperando Jugador...");
+                                cancion = 3;
+                                panel.setVisible(false);
+                                EsperandoPanel.setVisible(true);
+                                ServerSocket serverSocket = new ServerSocket(5000);
+                                Socket clientSocket = serverSocket.accept();
+                               
+                                try {
+                                    loadingPanel.setVisible(true);
+                                    juego.Iniciar(3);
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    serverThread.start();
+                }else{
                 if(!menu) {
                     try {
-                        juego.setVisible(true);
+                        loadingPanel.setVisible(true);
                         juego.IniciarGrabacion(3);
-                        juego.setFocusable(true);
-                        juego.requestFocusInWindow();
+
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 } else{
                         try {
-                            juego.setVisible(true);
+                            loadingPanel.setVisible(true);
                             juego.Iniciar(3);
-                            juego.setFocusable(true);
-                            juego.requestFocusInWindow();
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
                 }
+            }
+        }
+        });
+        cancion4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                juego.setOpaque(false);
+                panel.setVisible(false);
+                pausaPanel.setVisible(false);
+                CancionesPanelmenu.setVisible(false);
+                CancionesPanelgrabar.setVisible(false);
+                configPanel.setVisible(false);
+                configJuego.setVisible(false);
+                if(online){
+                    Thread serverThread = new Thread(new Runnable(){
+                        @Override
+                        public void run(){
+                            try {
+                                System.out.println("Esperando Jugador...");
+                                cancion = 4;
+                                panel.setVisible(false);
+                                EsperandoPanel.setVisible(true);
+                                ServerSocket serverSocket = new ServerSocket(5000);
+                                Socket clientSocket = serverSocket.accept();
+                               
+                                try {
+                                    loadingPanel.setVisible(true);
+                                    juego.Iniciar(4);
+
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    serverThread.start();
+                }else{
+                if(!menu) {
+                    try {
+                        loadingPanel.setVisible(true);
+                        juego.IniciarGrabacion(4);
+
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                } else{
+                        try {
+                            loadingPanel.setVisible(true);
+                            juego.Iniciar(4);
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                }
+            }
             }
         });
         botonSalir.addActionListener(new ActionListener() {
