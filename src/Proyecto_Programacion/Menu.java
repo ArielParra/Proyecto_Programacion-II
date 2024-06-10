@@ -6,24 +6,23 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.io.*;
-import java.io.DataOutputStream;
-import java.io.DataInputStream;
-import java.io.File;
 import java.net.*;
-import java.io.IOException;
 import java.awt.event.*;
 
 public class Menu extends JFrame{
     public Juego juego;
-    public Float gainControl = 0.0f;
     private Font customFont; 
     // Usar JLayeredPane en lugar de JPanel
     public JLayeredPane layeredPane;
     public boolean online=false;
     public VideoPanel videoPanel;
-    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel,EsperandoPanel,loadingPanel;
+    public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel,EsperandoPanel,loadingPanel,finalscore2;
     public int cancion;
-    public JLabel puntaje,fails;
+    public JLabel puntaje,puntaje2,fails,fails2;
+    public Thread serverThread;
+    private ObjectOutputStream outteclado;
+    private ObjectInputStream intTeclado;
+
     public Menu(){
         // Crear la única ventana JFrame
         setTitle("Meme hero"); // Título de la ventana
@@ -33,6 +32,8 @@ public class Menu extends JFrame{
 
         this.puntaje = new JLabel();
         this.fails = new JLabel();
+        this.puntaje2 = new JLabel();
+        this.fails2 = new JLabel();
 
         try {
             this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Runtoe.ttf")).deriveFont(12f);
@@ -63,6 +64,7 @@ public class Menu extends JFrame{
         this.EsperandoPanel = createEsperandoJugador();
         this.OnlinePanel = createOnlinePanel();
         this.finalscore = createfinalscore();
+        this.finalscore2 = createfinalscore2();
         this.CancionesPanelgrabar = createCancionesPanel(false);
         this.CancionesPanelmenu = createCancionesPanel(true);
 
@@ -77,6 +79,7 @@ public class Menu extends JFrame{
         layeredPane.add(OnlinePanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(EsperandoPanel,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(finalscore,JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(finalscore2,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelgrabar,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(CancionesPanelmenu,JLayeredPane.PALETTE_LAYER);
         layeredPane.add(pausaPanel, JLayeredPane.PALETTE_LAYER);
@@ -98,6 +101,7 @@ public class Menu extends JFrame{
         CancionesPanelmenu.setVisible(false);
         jugarPanel.setVisible(false);
         finalscore.setVisible(false);
+        finalscore2.setVisible(false);
         menuPanel.setVisible(true);
         // Mostrar la ventana
         setResizable(false);
@@ -114,6 +118,7 @@ public class Menu extends JFrame{
         videoPanel.setBounds(0, 0, newSize.width, newSize.height);
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
          finalscore.setBounds(0,0,newSize.width,newSize.height);
+         finalscore2.setBounds(0,0,newSize.width,newSize.height);
          OnlinePanel.setBounds(0,0,newSize.width,newSize.height);
          pausaPanel.setBounds(0, 0, newSize.width, newSize.height);
          loadingPanel.setBounds(0, 0, newSize.width, newSize.height);
@@ -162,6 +167,14 @@ public class Menu extends JFrame{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                serverThread = new Thread(new Runnable(){
+                    @Override
+                    public void run(){
+                        
+                    }
+                });
+                EsperandoPanel.setVisible(false);
+                online = false;
                 menuPanel.setVisible(true);
                 jugarPanel.setVisible(false);
             }
@@ -215,6 +228,7 @@ public class Menu extends JFrame{
                 juego.setMultiplayer(true);
                 panel.setVisible(false);
                 online = true;
+ 
                 jugarPanel.setVisible(false);
                 CancionesPanelmenu.setVisible(true);
             }   
@@ -242,12 +256,21 @@ public class Menu extends JFrame{
                             Socket clientSocket = new Socket("localhost", 5000);
                             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
                             cancion = in.readInt();
-
+                            outteclado = new ObjectOutputStream(clientSocket.getOutputStream());
+                            intTeclado = new ObjectInputStream(clientSocket.getInputStream());
                             try{
                                 loadingPanel.setVisible(true);
                                 juego.Iniciar(cancion);
                             }catch(IOException e1){
                                 e1.printStackTrace();
+                            }   
+                            while (true) {
+                                try {
+                                    TecladoEvento evento = (TecladoEvento) intTeclado.readObject();          
+                                    juego.nuevoEvento(evento);
+                                } catch (ClassNotFoundException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         } catch (IOException e2) {
                             e2.printStackTrace();
@@ -260,10 +283,10 @@ public class Menu extends JFrame{
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                
                 menuPanel.setVisible(true);
                 jugarPanel.setVisible(false);
                 panel.setVisible(false);
-                online = false;
             }
         });
         return panel;
@@ -490,13 +513,18 @@ public class Menu extends JFrame{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!online){
                 juego.setPausa(false);
                 videoPanel.reanudarReproduccion();
                 juego.setVisible(true);
                 panel.setVisible(false);
                 juego.setFocusable(true);
                 juego.requestFocusInWindow(); 
-                juego.repaint(); 
+                juego.repaint();
+                }else{
+                    //Nuevo evento tecla P
+                    juego.nuevoEvento(new TecladoEvento(KeyEvent.VK_P, 'P', true));
+                } 
             }
         });
     
@@ -567,18 +595,16 @@ public class Menu extends JFrame{
         constraints.gridy++;
         panel.add(button3, constraints);
     
-        volumenSlider.addChangeListener(e -> {
-            gainControl = (float) volumenSlider.getValue();
-            videoPanel.setVolumen((double)gainControl);
-            
-        });
         panel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                volumenSlider.setValue((int) videoPanel.getVolumen());
+                volumenSlider.setValue((int) (videoPanel.getVolumen()*100));
             }
         });
- 
+        volumenSlider.addChangeListener(e -> {
+            videoPanel.setVolumen((double)volumenSlider.getValue()/100);
+        });
+
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -635,12 +661,11 @@ public class Menu extends JFrame{
         panel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                volumenSlider.setValue((int) videoPanel.getVolumen());
+                volumenSlider.setValue((int) (videoPanel.getVolumen()*100));
             }
         });
         volumenSlider.addChangeListener(e -> {
-            gainControl = (float) volumenSlider.getValue();
-            videoPanel.setVolumen((double)gainControl);
+            videoPanel.setVolumen((double)volumenSlider.getValue()/100);
         });
 
 
@@ -741,6 +766,75 @@ public class Menu extends JFrame{
     
         return panel;
     }
+    public JPanel createfinalscore2(){
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    Image backgroundImageConfig = ImageIO.read(new File("images/fondocanciones.png"));
+                    g.drawImage(backgroundImageConfig, 0, 0, getWidth(), getHeight(), this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        };
+      
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel titulo = new JLabel("Puntaje Final Jugador 1");
+        titulo.setFont(customFont.deriveFont(35f));
+        titulo.setForeground(Color.WHITE);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.CENTER; // Centra el componente
+        panel.add(titulo, constraints);
+        constraints.insets = new Insets(10, 0, 10, 0);
+
+        //Tomar el puntaje final del juego con getFinalscore
+        puntaje.setFont(customFont.deriveFont(35f));
+        puntaje.setForeground(Color.WHITE);
+        constraints.gridy++;
+        panel.add(puntaje, constraints);
+
+        //Tomar fails del juego con getFails
+        fails.setFont(customFont.deriveFont(35f));
+        fails.setForeground(Color.WHITE);
+        constraints.gridy++;
+        panel.add(fails, constraints);
+
+        JLabel titulo2 = new JLabel("Puntaje Final Jugador 2");
+        titulo2.setFont(customFont.deriveFont(35f));
+        titulo2.setForeground(Color.WHITE);
+        constraints.gridy++;
+        panel.add(titulo2, constraints);
+    
+        //Tomar el puntaje final del juego con getFinalscore
+        puntaje2.setFont(customFont.deriveFont(35f));
+        puntaje2.setForeground(Color.WHITE);
+        constraints.gridy++;
+        panel.add(puntaje2, constraints);
+    
+        //Tomar fails del juego con getFails
+        fails2.setFont(customFont.deriveFont(35f));
+        fails2.setForeground(Color.WHITE);
+        constraints.gridy++;
+        panel.add(fails2, constraints);
+        JButton botonSalir = createbutton("Salir");
+        constraints.gridy++;
+        panel.add(botonSalir, constraints);
+        botonSalir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuPanel.setVisible(true);
+                panel.setVisible(false);
+            }
+        });
+      
+        return panel;
+    }
     public JPanel createfinalscore(){
       
         JPanel panel = new JPanel(){
@@ -756,9 +850,9 @@ public class Menu extends JFrame{
                 }
             }
         };
+      
         panel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-
         JLabel titulo = new JLabel("Puntaje Final");
         titulo.setFont(customFont.deriveFont(35f));
         titulo.setForeground(Color.WHITE);
@@ -783,7 +877,6 @@ public class Menu extends JFrame{
         JButton botonSalir = createbutton("Salir");
         constraints.gridy++;
         panel.add(botonSalir, constraints);
-        
         botonSalir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -791,43 +884,66 @@ public class Menu extends JFrame{
                 panel.setVisible(false);
             }
         });
-          
+
+      
         return panel;
     
     }
     private void createCancion(JPanel panel, int cancionglobal, boolean menu){
-        juego.setOpaque(false);
+                juego.setOpaque(false);
                 panel.setVisible(false);
                 pausaPanel.setVisible(false);
                 CancionesPanelmenu.setVisible(false);
                 CancionesPanelgrabar.setVisible(false);
                 configPanel.setVisible(false);
                 configJuego.setVisible(false);
+                EsperandoPanel.setVisible(true);
+
                 if(online){
-                    Thread serverThread = new Thread(new Runnable(){
+                    serverThread = new Thread(new Runnable(){
                         @Override
                         public void run(){
                             try {
                                 System.out.println("Esperando Jugador...");
                                 cancion = cancionglobal;
                                 panel.setVisible(false);
-                                EsperandoPanel.setVisible(true);
                                 ServerSocket serverSocket = new ServerSocket(5000);
                                 Socket clientSocket = serverSocket.accept();
                                 DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
                                 out.writeInt(cancionglobal);
                                 out.flush();
-                                try {
+                                outteclado = new ObjectOutputStream(clientSocket.getOutputStream());
+                                intTeclado = new ObjectInputStream(clientSocket.getInputStream());
+                                try{
                                     loadingPanel.setVisible(true);
                                     juego.Iniciar(cancionglobal);
 
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                 }
-                            
+                                    while (true) {
+                                        try {
+                                            TecladoEvento evento = (TecladoEvento) intTeclado.readObject();
+                                            juego.nuevoEvento(evento);
+                                        } catch (ClassNotFoundException e) {
+                                            e.printStackTrace();
+                                        } catch (StreamCorruptedException e) {
+                                            System.err.println("Datos corruptos en el flujo: " + e.getMessage());
+                                            break; // Rompe el bucle si los datos están corruptos
+                                        } catch (EOFException e) {
+                                            System.err.println("Fin del flujo de datos: " + e.getMessage());
+                                            break; // Rompe el bucle si se alcanza el fin del flujo
+                                        } catch (IOException e) {
+                                            System.err.println("Error de I/O: " + e.getMessage());
+                                            break; // Rompe el bucle si ocurre un error de I/O
+                                        }
+                                    }
+                                
+                                
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+                            
                         }
                     });
                     serverThread.start();
@@ -850,7 +966,18 @@ public class Menu extends JFrame{
                 }
             }
     }
-  
+    public void enviarEvento(KeyEvent e) {
+        if(outteclado != null){
+            TecladoEvento eventoTeclado = new TecladoEvento(e.getKeyCode(), e.getKeyChar(), e.getID() == KeyEvent.KEY_PRESSED);
+            try {
+                outteclado.writeObject(eventoTeclado);
+                outteclado.flush();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
     private JButton createbutton(String text){
         JButton button = new JButton(text);
         button.setForeground(Color.WHITE);

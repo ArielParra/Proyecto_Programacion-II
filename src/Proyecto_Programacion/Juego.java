@@ -155,6 +155,9 @@ public class Juego extends JPanel {
                         case 3:
                             switchtecla(tecla,cancion3);
                             break;
+                        case 4:
+                            switchtecla(tecla,cancion4);
+                            break;
                         default:
                             break;
                     }
@@ -163,6 +166,7 @@ public class Juego extends JPanel {
             }
             @Override
             public void keyPressed(KeyEvent e) {
+                menu.enviarEvento(e);
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_A:
                         if(amaractiv){
@@ -234,9 +238,16 @@ public class Juego extends JPanel {
                         break;
                     case KeyEvent.VK_P:
                         enPausa = !enPausa;
-                        menu.pausaPanel.setVisible(true);
-                        setFocusable(false);
-                        videoPanel.pausarReproduccion();
+                        if(enPausa){
+                            menu.pausaPanel.setVisible(true);
+                            setFocusable(false);
+                            videoPanel.pausarReproduccion();
+                        }else{
+                            menu.pausaPanel.setVisible(false);
+                            setFocusable(true);
+                            videoPanel.reanudarReproduccion();
+                        }
+
                         break;
                     case KeyEvent.VK_LEFT:
                         if(grabando){
@@ -332,8 +343,12 @@ public class Juego extends JPanel {
                 }
             }
         });
-
+    
         setFocusable(true);
+    }
+    public void nuevoEvento(TecladoEvento e){
+        KeyEvent nuevoEvento = new KeyEvent(this, e.getID(), e.getWhen(), e.getModifiersEx(), e.getKeyCode(), e.getKeyChar(), e.getKeyLocation());
+        dispatchEvent(nuevoEvento);
     }
     private void CicloPrincipalMultijugador(){
         long tiempoViejo = System.nanoTime();
@@ -351,6 +366,8 @@ public class Juego extends JPanel {
         combo = 1;
         combo2 = 1;
         int iteracion=0;
+        boolean perdiste = false;
+        boolean perdiste2 = false;
         int iteracion2=0;
         failsconsecutivas = 0;
         failsconsecutivas2 = 0;
@@ -396,7 +413,6 @@ public class Juego extends JPanel {
                     if(tiemposinicios.get(iteracion)<=tiempotranscurrido){
                         electrizadas = true;
                         iteracion++;
-                        System.out.println(iteracion);
                     }
                     }   
                     if(tiemposfinales.size()>iteracion2){
@@ -412,14 +428,30 @@ public class Juego extends JPanel {
                         long first = pair.getFirst();
                         int second = pair.getSecond();
                         if (tiempotranscurrido >= first - 1_200_000_000L) {
-                            crearFicha(first,second);
-                            crearFicha2(first,second);
+                           if(!perdiste){crearFicha(first,second);}
+                            if(!perdiste2){crearFicha2(first,second);}
                             iterator2.remove(); 
                         }
                          }
                     }
-                
-                    
+                    if(perdiste && perdiste2){
+                        Salirdeljuego(false);
+                        break;
+                    }
+                    if(perdiste){
+                        //eliminarfichas
+                        if(fichas != null){
+                            synchronized (fichas) {
+                                Iterator<Ficha> iterator = fichas.iterator();
+                                while (iterator.hasNext()) {
+                                    Ficha ficha = iterator.next();
+                                    iterator.remove();
+                                }
+                            }
+                        }
+                        mensaje = "¡Perdiste!";
+                        
+                    }else{
 
                     synchronized (fichas) {
                         Iterator<Ficha> iterator = fichas.iterator();
@@ -490,6 +522,53 @@ public class Juego extends JPanel {
                             }
                         }
                 }
+                synchronized (fichas) {
+                    Iterator<Ficha> iterator = fichas.iterator();
+                    while (iterator.hasNext()) {
+                        Ficha ficha = iterator.next();
+                        if (ficha.y >= getHeight()) {
+                                switch(ficha.columna){
+                                    case 0:
+                                        amaractiv = false;
+                                        break;
+                                    case 1:
+                                        azuactiv = false;
+                                        break;
+                                    case 2:
+                                        rojoactiv = false;
+                                        break;
+                                    case 3:
+                                        veractiv = false;
+                                        break;
+                                }
+                                iterator.remove();
+                                combo = 1;
+                                fails++;
+                                failsconsecutivas++;
+                                if(failsconsecutivas==10){
+                                    perdiste = true;
+                                    mensaje = "¡Perdiste!";
+                                }
+                                consecutivas = 0;
+                                mensaje= "¡Fallaste!";
+
+                    }
+                 }
+                 }
+                }
+                if(perdiste2){
+                    //eliminarfichas
+                    if(fichas2 != null){
+                        synchronized (fichas2) {
+                            Iterator<Ficha> iterator = fichas2.iterator();
+                            while (iterator.hasNext()) {
+                                Ficha ficha = iterator.next();
+                                iterator.remove();
+                            }
+                        }
+                    }
+                    mensaje2 = "¡Perdiste!";
+                }else{
                 synchronized (fichas2) {
                     Iterator<Ficha> iterator = fichas2.iterator();
                     while (iterator.hasNext()) {
@@ -558,90 +637,42 @@ public class Juego extends JPanel {
                             iterator.remove();
                         }
                     }
+             }
+             synchronized(fichas2){
+                Iterator<Ficha> iterator = fichas2.iterator();
+                while (iterator.hasNext()) {
+                    Ficha ficha = iterator.next();
+                    if (ficha.y >= getHeight()) {
+                        switch(ficha.columna){
+                            case 0:
+                                amaractiv2 = false;
+                                break;
+                            case 1:
+                                azuactiv2 = false;
+                                break;
+                            case 2:
+                                rojoactiv2 = false;
+                                break;
+                            case 3:
+                                veractiv2 = false;
+                                break;
+                        }
+                        iterator.remove();
+                        combo2 = 1;
+                        fails2++;
+                        failsconsecutivas2++;
+                        if(failsconsecutivas2==10){
+                            perdiste2 = true;
+                            mensaje2 = "¡Perdiste!";
+                        }
+                        consecutivas2 = 0;
+                        mensaje2= "¡Fallaste!";
+                    }
+                }
             }
+             }
                
-                synchronized (fichas) {
-                    Iterator<Ficha> iterator = fichas.iterator();
-                    while (iterator.hasNext()) {
-                        Ficha ficha = iterator.next();
-                        if (ficha.y >= getHeight()) {
-                            if(ficha.x < getWidth()/2 + 80){
-                                switch(ficha.columna){
-                                    case 0:
-                                        amaractiv = false;
-                                        break;
-                                    case 1:
-                                        azuactiv = false;
-                                        break;
-                                    case 2:
-                                        rojoactiv = false;
-                                        break;
-                                    case 3:
-                                        veractiv = false;
-                                        break;
-                                }
-                                iterator.remove();
-                                combo = 1;
-                                fails++;
-                                failsconsecutivas++;
-                                consecutivas = 0;
-                                mensaje= "¡Fallaste!";
-                            
-
-                            }else{
-                                switch(ficha.columna){
-                                    case 0:
-                                        amaractiv2 = false;
-                                        break;
-                                    case 1:
-                                        azuactiv2 = false;
-                                        break;
-                                    case 2:
-                                        rojoactiv2 = false;
-                                        break;
-                                    case 3:
-                                        veractiv2 = false;
-                                        break;
-                                }
-                                iterator.remove();
-                                combo2 = 1;
-                                fails2++;
-                                failsconsecutivas2++;
-                                consecutivas2 = 0;
-                                mensaje2= "¡Fallaste!";
-                            }
-                           
-                        }
-                    }
-                }
-                synchronized(fichas2){
-                    Iterator<Ficha> iterator = fichas2.iterator();
-                    while (iterator.hasNext()) {
-                        Ficha ficha = iterator.next();
-                        if (ficha.y >= getHeight()) {
-                            switch(ficha.columna){
-                                case 0:
-                                    amaractiv2 = false;
-                                    break;
-                                case 1:
-                                    azuactiv2 = false;
-                                    break;
-                                case 2:
-                                    rojoactiv2 = false;
-                                    break;
-                                case 3:
-                                    veractiv2 = false;
-                                    break;
-                            }
-                            iterator.remove();
-                            combo2 = 1;
-                            fails2++;
-                            failsconsecutivas2++;
-                            consecutivas2 = 0;
-                            mensaje2= "¡Fallaste!";
-                        }
-                    }
-                }
+              
                 repaint();
 
                 } else {
@@ -906,7 +937,6 @@ public class Juego extends JPanel {
                 tiempoViejo = tiempoRelativo;
                 tiempoViejoPausa = tiempoPausa;
                 tiempotranscurrido = tiempoNuevo - (tiempoInicial + tiempoPausa);
-                tiempoRestante = (long)videoPanel.getDuracion()- tiempotranscurrido;
                 if(tiemposinicios.size()>iteracion){ 
                     if(tiemposinicios.get(iteracion)<=tiempotranscurrido){
                         electrizadas = true;
@@ -1232,18 +1262,29 @@ public class Juego extends JPanel {
         try{
             if(hiloJuego!=null && hiloJuego.isAlive()){
                 hiloJuego.interrupt();
+                hiloJuego = null;
             }
         }catch(Exception e){
             e.printStackTrace();
         }
 
         if(!GuardarGrabacion){
+            videoPanel.salirDelVideo();
             videoPanel.setVisible(false);
             setVisible(false);
-            menu.puntaje.setText("Puntaje: " + score);
-            menu.fails.setText("Fails: " + fails);
-            menu.finalscore.setVisible(true);
+
+            if(multiplayer){
+                menu.puntaje.setText("Puntaje: "+score);
+                menu.puntaje2.setText("Puntaje: "+score2);
+                menu.fails.setText("Fails: "+fails);
+                menu.fails2.setText("Fails: "+fails2);
+                menu.finalscore2.setVisible(true);
+            }else{
+                menu.finalscore.setVisible(true);
+
+            }
         }else{
+            videoPanel.salirDelVideo();
             videoPanel.setVisible(false);
             setVisible(false);
             menu.menuPanel.setVisible(true);
