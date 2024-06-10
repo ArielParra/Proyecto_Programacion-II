@@ -18,7 +18,8 @@ public class Menu extends JFrame{
     public VideoPanel videoPanel;
     public JPanel menuPanel,configPanel,pausaPanel,configJuego,CancionesPanelgrabar,CancionesPanelmenu,finalscore,jugarPanel,OnlinePanel,EsperandoPanel,loadingPanel,finalscore2;
     public int cancion;
-    public JLabel puntaje,puntaje2,fails,fails2;
+    public JLabel puntaje,puntaje2,fails,fails2,puntajejugador1,failsjugador1;
+
     public Thread serverThread;
     private ObjectOutputStream outteclado;
     private ObjectInputStream intTeclado;
@@ -34,7 +35,8 @@ public class Menu extends JFrame{
         this.fails = new JLabel();
         this.puntaje2 = new JLabel();
         this.fails2 = new JLabel();
-
+        this.puntajejugador1 = new JLabel();
+        this.failsjugador1 = new JLabel();
         try {
             this.customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Runtoe.ttf")).deriveFont(12f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -115,7 +117,7 @@ public class Menu extends JFrame{
     public void resizewindow(){
         Dimension newSize = getSize();
         // Ajustar el tamaño de los paneles para que coincida con el tamaño de la ventana
-        videoPanel.setBounds(0, 0, newSize.width, newSize.height);
+         videoPanel.setBounds(0, 0, newSize.width, newSize.height);
          menuPanel.setBounds(0, 0, newSize.width, newSize.height);
          finalscore.setBounds(0,0,newSize.width,newSize.height);
          finalscore2.setBounds(0,0,newSize.width,newSize.height);
@@ -864,16 +866,18 @@ public class Menu extends JFrame{
         constraints.insets = new Insets(10, 0, 10, 0);
 
         //Tomar el puntaje final del juego con getFinalscore
-        puntaje.setFont(customFont.deriveFont(35f));
-        puntaje.setForeground(Color.WHITE);
+        puntajejugador1.setFont(customFont.deriveFont(35f));
+        puntajejugador1.setForeground(Color.WHITE);
         constraints.gridy++;
-        panel.add(puntaje, constraints);
+        panel.add(puntajejugador1, constraints);
 
         //Tomar fails del juego con getFails
-        fails.setFont(customFont.deriveFont(35f));
-        fails.setForeground(Color.WHITE);
+        failsjugador1.setFont(customFont.deriveFont(35f));
+        failsjugador1.setForeground(Color.WHITE);
         constraints.gridy++;
-        panel.add(fails, constraints);
+        panel.add(failsjugador1, constraints);
+
+
         JButton botonSalir = createbutton("Salir");
         constraints.gridy++;
         panel.add(botonSalir, constraints);

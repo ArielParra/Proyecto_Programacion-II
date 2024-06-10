@@ -1278,10 +1278,15 @@ public class Juego extends JPanel {
                 menu.puntaje2.setText("Puntaje: "+score2);
                 menu.fails.setText("Fails: "+fails);
                 menu.fails2.setText("Fails: "+fails2);
+                menu.finalscore2.revalidate();
+                menu.finalscore2.repaint();
                 menu.finalscore2.setVisible(true);
             }else{
+                menu.puntajejugador1.setText("Puntaje: "+score);
+                menu.failsjugador1.setText("Fails: "+fails);
+                menu.finalscore.revalidate();
+                menu.finalscore.repaint();
                 menu.finalscore.setVisible(true);
-
             }
         }else{
             videoPanel.salirDelVideo();
